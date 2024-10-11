@@ -65,10 +65,6 @@ interface ServiceState {
   subCategoryLevel2Index?: number;
   subCategoryLevel3Index?: number;
   subCategoryLevel4Index?: number;
-  fetchedLevel1SubCategoryList?: Category[];
-  fetchedLevel2SubCategoryList?: Category[];
-  fetchedLevel3SubCategoryList?: Category[];
-  fetchedLevel4SubCategoryList?: Category[];
 }
 
 const initialState: ServiceState = {
@@ -91,10 +87,6 @@ const initialState: ServiceState = {
   subCategoryLevel2Index: 0,
   subCategoryLevel3Index: 0,
   subCategoryLevel4Index: 0,
-  fetchedLevel1SubCategoryList: [],
-  fetchedLevel2SubCategoryList: [],
-  fetchedLevel3SubCategoryList: [],
-  fetchedLevel4SubCategoryList: [],
 };
 
 export const fetchServices = createAsyncThunk(
@@ -112,54 +104,6 @@ export const fetchServices = createAsyncThunk(
 
 export const fetchService = createAsyncThunk(
   "service/fetchService",
-  async (id: string, { rejectWithValue }) => {
-    try {
-      const response = await getService(id);
-      return response.data.data.data;
-    } catch (error: any) {
-      return rejectWithValue(error.response.data);
-    }
-  }
-);
-
-export const fetchLevel1SubCategoryList = createAsyncThunk(
-  "service/fetchLevel1SubCategoryList",
-  async (id: string, { rejectWithValue }) => {
-    try {
-      const response = await getService(id);
-      return response.data.data.data;
-    } catch (error: any) {
-      return rejectWithValue(error.response.data);
-    }
-  }
-);
-
-export const fetchLevel2SubCategoryList = createAsyncThunk(
-  "service/fetchLevel2SubCategoryList",
-  async (id: string, { rejectWithValue }) => {
-    try {
-      const response = await getService(id);
-      return response.data.data.data;
-    } catch (error: any) {
-      return rejectWithValue(error.response.data);
-    }
-  }
-);
-
-export const fetchLevel3SubCategoryList = createAsyncThunk(
-  "service/fetchLevel3SubCategoryList",
-  async (id: string, { rejectWithValue }) => {
-    try {
-      const response = await getService(id);
-      return response.data.data.data;
-    } catch (error: any) {
-      return rejectWithValue(error.response.data);
-    }
-  }
-);
-
-export const fetchLevel4SubCategoryList = createAsyncThunk(
-  "service/fetchLevel4SubCategoryList",
   async (id: string, { rejectWithValue }) => {
     try {
       const response = await getService(id);
@@ -466,11 +410,8 @@ const serviceSlice = createSlice({
         (service) => service._id !== action.payload
       );
     },
-    pushSubCategories: (state, action: PayloadAction<{ index: number; data: SubService[] }>) => {
-      state.service.subCategories[action.payload.index] = {
-        ...state.service.subCategories[action.payload.index],
-        subCategories: [...action.payload.data],
-      };
+    updateKeywordTitle: (state, action: PayloadAction<{ index: number; value: string }>) => {
+      state.service.subCategories[state.subCategoryIndex].keyWords[action.payload.index] = action.payload.value;
     },
     resetServiceState: () => initialState,
     },
@@ -484,7 +425,7 @@ const serviceSlice = createSlice({
         if (state.service.type === "volunteer") {
           state.service.subCategories = action.payload;
         }
-        if (state.service.subCategories.length === 0) {
+        if (state?.service?.subCategories.length === 0) {
           action.payload.map((item: Category) => {
             item.subCategories = [];
           });
@@ -511,7 +452,9 @@ const serviceSlice = createSlice({
       })
       .addCase(editService.fulfilled, (state, action) => {
         state.loading = false;
-        state.service = action.payload;
+        if (state.service.type !== "interest") {
+          state.service = action.payload;
+        }
       })
       .addCase(editService.rejected, (state, action) => {
         state.loading = false;
@@ -564,42 +507,6 @@ const serviceSlice = createSlice({
       .addCase(addSubService.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
-      })
-      .addCase(fetchLevel1SubCategoryList.fulfilled, (state, action) => {
-        action.payload.map((item: Category) => {
-          item.subCategories = [];
-        });
-        state.fetchedLevel1SubCategoryList = action.payload;
-      })
-      .addCase(fetchLevel1SubCategoryList.rejected, (state, action) => {
-        state.error = action.payload as string;
-      }) 
-      .addCase(fetchLevel2SubCategoryList.fulfilled, (state, action) => {
-        action.payload.map((item: Category) => {
-          item.subCategories = [];
-        });
-        state.fetchedLevel2SubCategoryList = action.payload;
-      })
-      .addCase(fetchLevel2SubCategoryList.rejected, (state, action) => {
-        state.error = action.payload as string;
-      })
-      .addCase(fetchLevel3SubCategoryList.fulfilled, (state, action) => {
-        action.payload.map((item: Category) => {
-          item.subCategories = [];
-        });
-        state.fetchedLevel3SubCategoryList = action.payload;
-      })
-      .addCase(fetchLevel3SubCategoryList.rejected, (state, action) => {
-        state.error = action.payload as string;
-      })
-      .addCase(fetchLevel4SubCategoryList.fulfilled, (state, action) => {
-        action.payload.map((item: Category) => {
-          item.subCategories = [];
-        });
-        state.fetchedLevel4SubCategoryList = action.payload;
-      })
-      .addCase(fetchLevel4SubCategoryList.rejected, (state, action) => {
-        state.error = action.payload as string;
       });
   },
 });
@@ -624,7 +531,7 @@ export const {
   handleRemoveServices,
   copyKeyword,
   setCopyKeywordsSubList,
-  pushSubCategories,
+  updateKeywordTitle,
 } = serviceSlice.actions;
 
 export const selectService = (state: RootState) => state.service.service;

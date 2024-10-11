@@ -18,19 +18,19 @@ import { fetchUserData, setCurrentPage } from "@/store/Slices/PaymentSlice";
 function DashboardPage() {
   const dispatch = useAppDispatch();
   const { users, userCount, taskCount, pageData, currentPage } = useSelector((state: RootState) => state.payment);
+  const isAuthenticated = useAuth('/');
 
   const handlePageChange = (page: number) => {
     dispatch(setCurrentPage(page));
   };
 
-  const isAuthenticated = useAuth('/');
-  if (!isAuthenticated) {
-    return null;
-  }
-
   useEffect(() => {
     dispatch(fetchUserData({ page: currentPage, limit: pageData?.limit}));
   }, [dispatch, pageData, currentPage]);
+
+  if (!isAuthenticated) {
+    return null;
+  }
 
   return (
     <RoleGuard allowedRoles={[1, 4]}>

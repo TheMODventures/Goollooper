@@ -48,14 +48,11 @@ import {
   selectState,
   handleUpdateSubCategory,
   removeService,
-  fetchLevel1SubCategoryList,
-  fetchLevel2SubCategoryList,
-  fetchLevel3SubCategoryList,
-  fetchLevel4SubCategoryList,
-  pushSubCategories,
+  updateKeywordTitle,
 } from "@/store/Slices/ServiceSlice";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import CopyToModal from "@/components/services/CopyToModal";
+import OptionalCatgories from "@/components/services/OptionalCatgories";
 
 export default function InterestSubpage() {
   const params = useParams();
@@ -79,7 +76,7 @@ export default function InterestSubpage() {
 
   const [singleKeyword, setSingleKeyword] = useState<string>("");
   const [subCategoryIndex, setSubCategoryIndex] = useState<number>(0);
-  const [data, setData] = useState<any>({});
+  const [keywordIndex, setKeywordIndex] = useState<number>(0);
   const [nestedSubCategoryInputs, setNestedSubCategoryInputs] = useState<{
     [key: number]: string;
   }>({
@@ -92,96 +89,15 @@ export default function InterestSubpage() {
   const fetchData = useCallback(() => {
     if (serviceId !== "add") {
       dispatch(fetchService(serviceId));
-      service.subCategories.forEach((item: any) => {
-        if (item.hasSubCategory) {
-          dispatch(fetchLevel1SubCategoryList(item._id));
-        }
-      });
-      setData(service);
-      level1SubCategoryList.map((item: SubService, index: number) => {
-        if (item.hasSubCategory) {
-          dispatch(fetchLevel2SubCategoryList(String(item._id)));
-        }
-      });
-      level2SubCategoryList.map((item: SubService, index: number) => {
-        if (item.hasSubCategory) {
-          dispatch(fetchLevel3SubCategoryList(String(item._id)));
-        }
-      });
-      level3SubCategoryList.map((item: SubService, index: number) => {
-        if (item.hasSubCategory) {
-          dispatch(fetchLevel4SubCategoryList(String(item._id)));
-        }
-      });
-      service.subCategories.forEach((item: any, index: number) => {
-        if (item.hasSubCategory) {
-          level1SubCategoryList.forEach((subItem: any) => {
-            if (item._id === subItem.parent) {
-              console.log("subItem", subItem);
-              setData((prevData: any) => {
-                const updatedSubCategories = prevData.subCategories.map(
-                  (subCategory: any) => {
-                    if (subCategory._id === item._id) {
-                      return {
-                        ...subCategory,
-                        subCategories: [subItem],
-                      };
-                    }
-                    return subCategory;
-                  }
-                );
-                return {
-                  ...prevData,
-                  subCategories: updatedSubCategories,
-                };
-              });
-              // dispatch(pushSubCategories({index: index, data: level1SubCategoryList}));
-            }
-          });
-        }
-      });
-      service.subCategories.forEach((item: any, index: number) => {
-        if (item.hasSubCategory) {
-          item.subCatgories?.forEach((level2: any, index: number) => {
-            level2SubCategoryList.forEach((subItem: any) => {
-              if (item._id === subItem.parent) {
-                console.log("subItem", subItem);
-                setData((prevData: any) => {
-                  const updatedSubCategories = prevData.subCategories.map(
-                    (subCategory: any) => {
-                      if (subCategory._id === item._id) {
-                        subItem.subCategories = [];
-                        return {
-                          ...subCategory,
-                          subCategories: [subItem],
-                        };
-                      }
-                      return subCategory;
-                    }
-                  );
-                  return {
-                    ...prevData,
-                    subCategories: updatedSubCategories,
-                  };
-                });
-                // dispatch(pushSubCategories({index: index, data: level1SubCategoryList}));
-              }
-            });
-          });
-        }
-      });
     }
-  }, [dispatch, serviceId, service.subCategories]);
+  }, [dispatch, serviceId]);
 
   useEffect(() => {
     fetchData();
-  }, [fetchData]);
-
-  useEffect(() => {
     return () => {
       dispatch(resetServiceState());
     };
-  }, [dispatch]);
+  }, [dispatch, fetchData]);
 
   const fetchIndustries = useCallback(() => {
     dispatch(getIndustries());
@@ -210,7 +126,7 @@ export default function InterestSubpage() {
   const handleAddSubCategoryClick = () => {
     if (serviceId === "add") {
       dispatch(handleAddSubCategory(singleSubCategory));
-    } else {
+    } else if (singleSubCategory) {
       const id = service?.subCategories[subCategoryIndex]?._id ?? null;
       const parent = service?.subCategories[subCategoryIndex]?.parent ?? null;
       const type = service?.subCategories[subCategoryIndex]?.type ?? null;
@@ -220,6 +136,9 @@ export default function InterestSubpage() {
       );
       dispatch(handleUpdateSubCategory(singleSubCategory));
       dispatch(handleSingleSubCategory(""));
+      toast.success("Sub category updated successfully");
+    } else {
+      toast.warning("Please input a value for sub category");
     }
   };
 
@@ -249,12 +168,33 @@ export default function InterestSubpage() {
   };
 
   const handleAddKeywordClick = () => {
-    dispatch(handleAddKeyword({ subCategoryIndex, value: singleKeyword }));
+    if (serviceId == "add") {
+      dispatch(handleAddKeyword({ subCategoryIndex, value: singleKeyword }));
+    } else {
+      const id = service?.subCategories[subCategoryIndex]._id;
+      dispatch(updateKeywordTitle({ index: keywordIndex, value: singleKeyword }));
+      const filterKeyword = service?.subCategories[subCategoryIndex].keyWords.filter((keyword: string) => keyword !== service?.subCategories[subCategoryIndex].keyWords[keywordIndex]);
+      filterKeyword.push(singleKeyword);
+      const body = {
+        keyWords: filterKeyword,
+      };
+      dispatch(editService({ id: id, service: body }));
+      console.log("Update service:", id, body);
+    }
     setSingleKeyword("");
   };
 
   const handleRemoveKeywordClick = (index: number, name: string) => {
-    dispatch(handleRemoveKeyword({ subCategoryIndex, value: name }));
+    if (serviceId !== "add") {
+      const id = service?.subCategories[subCategoryIndex]._id;
+      const updatedKeywords = service?.subCategories[subCategoryIndex].keyWords.filter((keyword: string) => keyword !== name);
+      const body = {
+        keyWords: updatedKeywords,
+      };
+      dispatch(editService({ id: id, service: body }));
+      console.log("Update service:", id, body);
+    }
+    dispatch(handleRemoveKeyword({ subCategoryIndex, value: name }))
   };
 
   const handleAddNestedSubCategoryClick = (level: number) => {
@@ -335,6 +275,10 @@ export default function InterestSubpage() {
     }
   }
 
+  const handleKeyworSelect = (index: number) => {
+    setKeywordIndex(index);
+  };
+
   const handleSaveService = () => {
     dispatch(saveService({ service }))
       .unwrap()
@@ -346,11 +290,7 @@ export default function InterestSubpage() {
       });
   };
 
-  console.log(data);
-  // console.log(level1SubCategoryList);
-  // console.log(level2SubCategoryList);
-  // console.log(level3SubCategoryList);
-  // console.log(level4SubCategoryList);
+  console.log("Service:", service);
 
   return (
     <DashboardLayout>
@@ -454,7 +394,7 @@ export default function InterestSubpage() {
                       ? "Add keywords for"
                       : "Update keywords for"}
                     <span className="text-PrimaryColor ml-1">
-                      {service?.subCategories[subCategoryIndex]?.title}
+                      {service?.subCategories?.[subCategoryIndex]?.title}
                     </span>
                   </h4>
                 </div>
@@ -488,17 +428,18 @@ export default function InterestSubpage() {
                   </Button>
                 </div>
                 <div className="flex flex-wrap gap-5 mt-6">
-                  {service?.subCategories[subCategoryIndex]?.keyWords?.map(
+                  {service?.subCategories?.[subCategoryIndex]?.keyWords?.map(
                     (keyword: string, index: number) => (
                       <Chips
                         key={keyword}
                         id={keyword}
                         index={index}
                         text={keyword}
-                        selected={subCategoryIndex}
-                        isSubCategory={false}
-                        onKeywordClick={(index, name) =>
-                          handleRemoveKeywordClick(index, name)
+                        selected={keywordIndex}
+                        currentSelected={handleKeyworSelect}
+                        isSubCategory={serviceId === "add" ? false : true}
+                        onKeywordClick={(index, name) => 
+                            handleRemoveKeywordClick(index, name)
                         }
                       />
                     )
@@ -506,70 +447,74 @@ export default function InterestSubpage() {
                 </div>
               </TabsContent>
               <TabsContent value="nestedSubCategory">
-                {[0, 1, 2, 3].map((level) => (
-                  <div key={level}>
-                    <div className="mt-10 mb-2 flex justify-between">
-                      <h4 className="text-[1.5rem] leading-[0.938rem] font-normal">
-                        {serviceId === "add"
-                          ? "Add sub category to"
-                          : "Update sub category to"}
-                        <span className="text-PrimaryColor ml-1">
-                          {getNestedSubCategoryTitle(
-                            service,
-                            subCategoryIndex,
-                            level
-                          )}
-                        </span>
-                      </h4>
-                      <h4 className="text-[1.5rem] leading-[0.938rem] font-normal">
-                        Level {level + 1}
-                      </h4>
-                    </div>
-
-                    <ServiceInput
-                      value={nestedSubCategoryInputs[level]}
-                      onChange={(value) => {
-                        handleNestedSubCategoryChange(value, level);
-                        nestedSubCategoryInputs[level] = "";
-                      }}
-                    />
-                    <div className="mt-5 flex justify-end">
-                      <Button
-                        className="h-[2.375rem] text-[0.875rem] leading-[1.25rem] font-medium bg-PrimaryColor rounded-full"
-                        onClick={() => {
-                          if (serviceId !== "add") {
-                            handleAddNestedSubCategoryClick(level);
-                          }
+                {serviceId === "add" ? (
+                  [0, 1, 2, 3].map((level) => (
+                    <div key={level}>
+                      <div className="mt-10 mb-2 flex justify-between">
+                        <h4 className="text-[1.5rem] leading-[0.938rem] font-normal">
+                          {serviceId === "add"
+                            ? "Add sub category to"
+                            : "Update sub category to"}
+                          <span className="text-PrimaryColor ml-1">
+                            {getNestedSubCategoryTitle(
+                              service,
+                              subCategoryIndex,
+                              level
+                            )}
+                          </span>
+                        </h4>
+                        <h4 className="text-[1.5rem] leading-[0.938rem] font-normal">
+                          Level {level + 1}
+                        </h4>
+                      </div>
+  
+                      <ServiceInput
+                        value={nestedSubCategoryInputs[level]}
+                        onChange={(value) => {
+                          handleNestedSubCategoryChange(value, level);
                         }}
-                      >
-                        {serviceId === "add"
-                          ? "Add SubCategory"
-                          : "Update SubCategory"}
-                      </Button>
+                      />
+                      <div className="mt-5 flex justify-end">
+                        <Button
+                          className="h-[2.375rem] text-[0.875rem] leading-[1.25rem] font-medium bg-PrimaryColor rounded-full"
+                          onClick={() => {
+                            handleAddNestedSubCategoryClick(level);
+                          }}
+                        >
+                          {serviceId === "add"
+                            ? "Add SubCategory"
+                            : "Update SubCategory"}
+                        </Button>
+                      </div>
+  
+                      <div className="w-full flex flex-wrap gap-5 mt-6">
+                        {getNestedSubCategories(
+                          service,
+                          subCategoryIndex,
+                          level
+                        ).map((item: any, index: number) => (
+                          <Chips
+                            key={item?.title}
+                            id={item._id}
+                            index={index}
+                            text={item?.title}
+                            selected={getLevelIndex(level, state)}
+                            isSubCategory={true}
+                            onSubCategoryClick={handleRemoveSubCategoryClick}
+                            currentSelected={(index) =>
+                              handleLevelIndexChange(level, index)
+                            }
+                          />
+                        ))}
+                      </div>
                     </div>
-
-                    <div className="w-full flex flex-wrap gap-5 mt-6">
-                      {getNestedSubCategories(
-                        service,
-                        subCategoryIndex,
-                        level
-                      ).map((item: any, index: number) => (
-                        <Chips
-                          key={item?.title}
-                          id={item._id}
-                          index={index}
-                          text={item?.title}
-                          selected={getLevelIndex(level, state)}
-                          isSubCategory={true}
-                          onSubCategoryClick={handleRemoveSubCategoryClick}
-                          currentSelected={(index) =>
-                            handleLevelIndexChange(level, index)
-                          }
-                        />
-                      ))}
-                    </div>
-                  </div>
-                ))}
+                  ))
+                ) : (
+                  service?.subCategories?.[subCategoryIndex]?.hasSubCategory ? 
+                  <OptionalCatgories id={service?.subCategories[subCategoryIndex]?._id} level={1} title={service?.subCategories[subCategoryIndex]?.title} /> 
+                  : <h1 className="pt-3 pb-3.5">No nested level subcategories</h1>
+                )}
+                
               </TabsContent>
             </Tabs>
           </div>
