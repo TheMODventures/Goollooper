@@ -56,6 +56,7 @@ const SubadminPage = () => {
             You can see the overall Sub Admins of Goollooper here
           </p>
           <Search isSubAdmin={true} isUser={false} value={search} onChange={handleSearchChange} users={subadmins} />
+
           <div className="flex flex-col items-stretch space-y-14 flex-grow overflow-auto">
             {/* Adding overflow-auto to handle the content overflow */}
             {/* <Users users={dummyUsers2}  isSubAdmin={true}/> */}

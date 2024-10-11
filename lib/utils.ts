@@ -68,6 +68,7 @@ export const downloadCSV = (users: User[]) => {
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
+
 };
 
 function convertToSubcurrency(amount: number, factor = 100) {
@@ -75,3 +76,4 @@ function convertToSubcurrency(amount: number, factor = 100) {
 }
 
 export default convertToSubcurrency;
+

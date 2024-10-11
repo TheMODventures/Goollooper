@@ -58,7 +58,9 @@ const UsersPage = () => {
           <p className="text-subTitleColor mt-5">
             You can see the overall Users of Goollooper here
           </p>
+
           <Search isSubAdmin={false} isUser={true} onRoleFilterChange={handleRoleFilterChange} roleFilter={roleFilter} value={search} onChange={handleSearchChange} users={users} />
+
           <div className="flex flex-col items-stretch space-y-14 flex-grow overflow-auto">
             {/* Adding overflow-auto to handle the content overflow */}
             {users?.length ? <Users users={users} isUser={true} isSubAdmin={false} isPayment={false} /> : null}

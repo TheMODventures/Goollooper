@@ -14,7 +14,9 @@ const ImagePreview = ({
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [startPosition, setStartPosition] = useState({ x: 0, y: 0 });
   const [imageSize, setImageSize] = useState({ width: 0, height: 0 });
+
   const containerRef = useRef<HTMLDivElement>(null);
+
   const imageRef = useRef<HTMLImageElement>(null);
 
   useEffect(() => {
@@ -27,10 +29,13 @@ const ImagePreview = ({
     const img = new window.Image();
     img.onload = () => {
       setImageSize({ width: img.naturalWidth, height: img.naturalHeight });
+
       fitImageToContainer(img.naturalWidth, img.naturalHeight);
+
     };
     img.src = src;
   }, [src]);
+
 
   const fitImageToContainer = (imgWidth: number, imgHeight: number) => {
     if (containerRef.current) {
@@ -53,6 +58,7 @@ const ImagePreview = ({
     }
   };
 
+
   const handleMouseDown = (e: React.MouseEvent) => {
     setDragging(true);
     setStartPosition({ x: e.clientX - position.x, y: e.clientY - position.y });
@@ -72,10 +78,12 @@ const ImagePreview = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+
       <div
         ref={containerRef}
         className="relative w-full h-full flex items-center justify-center overflow-hidden"
       >
+
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-white bg-black bg-opacity-50 rounded-full p-2 z-10"
@@ -107,6 +115,7 @@ const ImagePreview = ({
             ref={imageRef}
             src={src}
             alt="Preview"
+
             width={imageSize.width}
             height={imageSize.height}
             style={{
@@ -114,6 +123,7 @@ const ImagePreview = ({
               height: 'auto',
               maxWidth: 'none',
               maxHeight: 'none',
+
             }}
           />
         </div>

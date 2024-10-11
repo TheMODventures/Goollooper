@@ -5,6 +5,7 @@ import DashboardLayout from "@/app/layouts/DashboardLayout";
 import GuidelineLayout from "@/app/layouts/GuidelineLayout";
 import { use, useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
+
 import { Chips } from "@/components/Chips";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store/store";
@@ -36,6 +37,7 @@ import {
   selectSubCategoryLevel2Index,
   selectSubCategoryLevel3Index,
   selectSubCategoryLevel4Index,
+
   selectLevel1SubCategoryList,
   selectLevel2SubCategoryList,
   selectLevel3SubCategoryList,
@@ -67,16 +69,19 @@ export default function InterestSubpage() {
   const level2SubCategoryList = useSelector(selectLevel2SubCategoryList);
   const level3SubCategoryList = useSelector(selectLevel3SubCategoryList);
   const level4SubCategoryList = useSelector(selectLevel4SubCategoryList);
+
   const loading = useSelector(selectLoading);
   const singleSubCategory = useSelector(selectSingleSubCategory);
   const industries = useSelector(
     (state: RootState) => state.service.industries
   );
+
   const state = useSelector(selectState);
 
   const [singleKeyword, setSingleKeyword] = useState<string>("");
   const [subCategoryIndex, setSubCategoryIndex] = useState<number>(0);
   const [keywordIndex, setKeywordIndex] = useState<number>(0);
+
   const [nestedSubCategoryInputs, setNestedSubCategoryInputs] = useState<{
     [key: number]: string;
   }>({
@@ -97,7 +102,9 @@ export default function InterestSubpage() {
     return () => {
       dispatch(resetServiceState());
     };
+
   }, [dispatch, fetchData]);
+
 
   const fetchIndustries = useCallback(() => {
     dispatch(getIndustries());
@@ -124,6 +131,7 @@ export default function InterestSubpage() {
   };
 
   const handleAddSubCategoryClick = () => {
+
     if (serviceId === "add") {
       dispatch(handleAddSubCategory(singleSubCategory));
     } else if (singleSubCategory) {
@@ -152,6 +160,7 @@ export default function InterestSubpage() {
         "";
       dispatch(handleRemoveSubCategory(title));
     }
+
   };
 
   const handleCurrentSubCategoryClick = (index: number) => {
@@ -168,6 +177,7 @@ export default function InterestSubpage() {
   };
 
   const handleAddKeywordClick = () => {
+
     if (serviceId == "add") {
       dispatch(handleAddKeyword({ subCategoryIndex, value: singleKeyword }));
     } else {
@@ -181,10 +191,12 @@ export default function InterestSubpage() {
       dispatch(editService({ id: id, service: body }));
       console.log("Update service:", id, body);
     }
+
     setSingleKeyword("");
   };
 
   const handleRemoveKeywordClick = (index: number, name: string) => {
+
     if (serviceId !== "add") {
       const id = service?.subCategories[subCategoryIndex]._id;
       const updatedKeywords = service?.subCategories[subCategoryIndex].keyWords.filter((keyword: string) => keyword !== name);
@@ -212,6 +224,7 @@ export default function InterestSubpage() {
     );
     setNestedSubCategoryInputs((prev) => ({ ...prev, [level]: "" }));
   };
+
 
   function getLevelIndex(level: number, state: any): number {
     switch (level) {
@@ -275,22 +288,24 @@ export default function InterestSubpage() {
     }
   }
 
+
   const handleKeyworSelect = (index: number) => {
     setKeywordIndex(index);
   };
+
 
   const handleSaveService = () => {
     dispatch(saveService({ service }))
       .unwrap()
       .then(() => {
+
         router.push("/guideline/Interest");
+
       })
       .catch((error: any) => {
         console.error("Failed to save service:", error);
       });
   };
-
-  console.log("Service:", service);
 
   return (
     <DashboardLayout>
@@ -300,6 +315,7 @@ export default function InterestSubpage() {
             <h1 className="text-[1.875em] leading-[2.813] font-bold">
               Interest / Categories
             </h1>
+
             {serviceId === "add" ? (
               <Button
                 className="w-[7.75rem] h-[2.375rem] text-[0.875rem] leading-[1.25rem] font-medium bg-PrimaryColor rounded-full"
@@ -515,6 +531,7 @@ export default function InterestSubpage() {
                   : <h1 className="pt-3 pb-3.5">No nested level subcategories</h1>
                 )}
                 
+
               </TabsContent>
             </Tabs>
           </div>

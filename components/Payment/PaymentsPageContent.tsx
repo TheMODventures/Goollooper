@@ -64,7 +64,9 @@ const PaymentsPageContent = () => {
         };
 
         fetchData();
+
     }, [dispatch, currentPage, pageData.limit, goollooperBalanceData, type]);
+
 
 
     const handlePageChange = (page: number) => {

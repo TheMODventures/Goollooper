@@ -25,7 +25,9 @@ const Selector: React.FC<SelectorProps> = ({ options, placeholder, onChange }) =
         <SelectValue placeholder={`Select ${placeholder}`} />
       </SelectTrigger>
       <SelectContent>
+
         {Array.isArray(options) && options.length > 0 ?  options?.map((option) => (
+
           <SelectItem key={option.id + option.name} value={option.name}>
             {option.name}
           </SelectItem>

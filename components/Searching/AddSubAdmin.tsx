@@ -7,6 +7,7 @@ import { Button } from "../ui/button";
 
 import { onAddSubAdmin } from "@/api";
 import { calculateAge } from "@/lib/utils";
+
 import { Checkbox } from "../ui/checkbox";
 import { Label } from "../ui/label";
 import {
@@ -19,6 +20,7 @@ import {
   DialogTrigger,
 } from "../ui/dialog";
 
+
 export default function AddSubAdmin() {
   const [loading, setLoading] = useState<boolean>(false);
   const [firstName, setFirstName] = useState<string>("");
@@ -29,6 +31,7 @@ export default function AddSubAdmin() {
   const [dob, setDob] = useState<string>("");
   const [location, setLocation] = useState<any>("");
   const [selectRole, setSelectRole] = useState<number>(0);
+
 
   const onSubmit = async () => {
     if (
@@ -106,6 +109,7 @@ export default function AddSubAdmin() {
   };
 
   return (
+
     <Dialog>
       <DialogTrigger>
         <button className="flex items-center px-7 bg-backGroundSecondaryColor py-2 gap-2 rounded-lg">
@@ -222,6 +226,7 @@ export default function AddSubAdmin() {
                 />
                 <Label htmlFor="terms">Support</Label>
               </div>
+
             </div>
           </div>
         </div>

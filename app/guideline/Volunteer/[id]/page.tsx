@@ -100,6 +100,7 @@ export default function VolunteerSubpage() {
     dispatch(handleSingleSubCategory(value));
   };
 
+
   const handleRemoveSubCategoryClick = (value: string | undefined) => {
     dispatch(removeService(String(value)));
     const subCategory = service?.subCategories?.find(
@@ -107,6 +108,7 @@ export default function VolunteerSubpage() {
     )?.title;
     // console.log(subCategory);
     dispatch(handleRemoveSubCategory(subCategory));
+
   };
 
   const handleCurrentSubCategoryClick = (index: number) => {
@@ -192,11 +194,13 @@ export default function VolunteerSubpage() {
                 service.subCategories.map((item: SubService, index: number) => (
                   <Chips
                     key={item?.title}
+
                     id={item?._id ?? ""}
                     index={index}
                     text={item?.title}
                     isSubCategory={true}
                     isDeleteId={true}
+
                     onSubCategoryClick={handleRemoveSubCategoryClick}
                     currentSelected={handleCurrentSubCategoryClick}
                   />

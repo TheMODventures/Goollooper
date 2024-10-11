@@ -15,6 +15,7 @@ interface SearchProps {
   users: User[];
 }
 
+
 export default function Search({ isSubAdmin, isUser, value, onChange, onRoleFilterChange, roleFilter, users }: SearchProps) {
   const subAdminFilterLabelData = [
     { label: "User", value: 2 },
@@ -29,6 +30,7 @@ export default function Search({ isSubAdmin, isUser, value, onChange, onRoleFilt
     { label: "Withdraw", value: 8 },
     { label: "Service Initiation Fee", value: 9 },
   ];
+
 
   const handleRoleFilterChange = (role: number | null) => {
     if (onRoleFilterChange && role !== null && (isSubAdmin || isUser)) {
@@ -72,7 +74,9 @@ export default function Search({ isSubAdmin, isUser, value, onChange, onRoleFilt
         : null}
       </div>
       <div>
+
         {isUser ? (
+
           <button className="flex items-center px-7 bg-backGroundSecondaryColor py-2 gap-2 rounded-lg"
             onClick={handleDownloadCSV}
           >

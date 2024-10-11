@@ -16,7 +16,9 @@ const AuthLayout: React.FC<AuthModule> = ({
   return (
     <div className="flex justify-start h-screen overflow-hidden">
       <section className="w-1/2 h-full">
+
         <Image alt="login-cover-image" className="object-cover w-full h-full" src={Picture}/>
+
       </section>
 
       <section className="w-1/2 bg-backGroundColor flex items-center justify-center">

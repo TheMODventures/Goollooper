@@ -10,7 +10,7 @@ on:
 jobs:
   build:
 
-    runs-on: self-hosted
+    runs-on: goollooper-admin-panel
 
     strategy:
       matrix:
@@ -26,5 +26,5 @@ jobs:
         cache: 'npm'
     - run: npm i
     - run: npm run build 
-    - run: /home/ubuntu/.nvm/versions/node/v18.20.4/bin/pm2 restart nextjs-app 
+    - run: /home/mod/.nvm/versions/node/v22.9.0/bin/pm2 restart nextjs-app 
     
