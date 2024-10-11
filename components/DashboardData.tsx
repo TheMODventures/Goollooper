@@ -28,7 +28,7 @@ const DashboardData: React.FC<DashboardDataProps> = ({ currentPage, onDataLoaded
     };
 
     fetchData();
-  }, [dispatch, pageData?.limit, onDataLoaded, pageData, taskCount, userCount, users]);
+  }, [dispatch, currentPage, pageData?.limit, onDataLoaded, pageData, taskCount, userCount, users]);
 
   return isLoading ? <div>Loading dashboard data...</div> : null; 
 };

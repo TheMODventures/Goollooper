@@ -84,7 +84,8 @@ const CopyToModal: FC<CopyToModalProps> = ({
             index !== currentIndex ? (
               <Chips
                 key={cont.title}
-                id={index}
+                id={index.toString()}
+                index={index}
                 text={cont.title}
                 hideCross={true}
                 selected={selected}

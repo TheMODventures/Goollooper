@@ -11,6 +11,7 @@ import { addGuidline, getGuidline, updateGuidline } from "@/api";
 import QuillToolbar from "@/components/Editor/Toolbar";
 import RoleGuard from "@/components/RoleGuard";
 import { useAuth } from "@/components/WithAuth/withAuth";
+import { set } from "date-fns";
 
 const TermsPage = () => {
   const isAuthenticated = useAuth('/');
@@ -44,9 +45,12 @@ const TermsPage = () => {
     }
     try {
       setLoading(true);
+      const cleanedTermsAndCondition = termsAndCondition.replaceAll("<p><br></p>", "<br>");
+      // setTermsAndCondition(cleanedTermsAndCondition);  
+      console.log("cleanedTermsAndCondition", cleanedTermsAndCondition);
       let data = {
         type: 2,
-        content: termsAndCondition,
+        content: cleanedTermsAndCondition,
       };
       let termsRes: any;
       if (id) {
