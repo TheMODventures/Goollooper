@@ -114,8 +114,8 @@ export const addService = function (body: any) {
 };
 
 export const updateService = function (id: string, body: any) {
-
   return Api.patch(`/service/update/${id}`, body);
+}
 
 
 export const deleteService = function (id: string) {
