@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, {  useState } from "react";
 import {
   useStripe,
   useElements,
@@ -14,12 +14,14 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "../ui/dialog";
+
 import { loadStripe, PaymentRequest } from "@stripe/stripe-js";
 import { Api } from "@/api/Middleware";
 import { DialogClose } from "@radix-ui/react-dialog";
 import { CircleCheck } from "lucide-react";
 
 const stripeKey = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
+
 
 const CheckoutForm = ({
   amount,
@@ -87,6 +89,16 @@ const CheckoutForm = ({
       setLoading(false);
       return;
     }
+    const { error } = await elements.submit();
+    if (error) {
+      alert("ERROR")
+    } 
+    const payment = elements.getElement(CardElement);
+
+    if(!payment){
+      return;
+    }
+
 
     const { error } = await elements.submit();
     if (error) {
@@ -106,6 +118,7 @@ const CheckoutForm = ({
         card: payment,
         type: "card",
       });
+
 
     if (submitError) {
       console.error("Error creating payment method:", submitError);
@@ -135,10 +148,12 @@ const CheckoutForm = ({
 
   return (
     <form onSubmit={handleSubmit}>
+
       {paymentRequest && (
         <PaymentRequestButtonElement options={{ paymentRequest }} />
       )}
       <CardElement />
+
       {errorMessage && <div className="text-red-500 mt-2">{errorMessage}</div>}
       <button
         type="submit"
@@ -162,6 +177,7 @@ const CheckoutPage = ({
   paymentIntentId: string;
   handleClientSecret: (value: number) => void;
 }) => {
+
   const [success, setSucess] = useState<boolean>(false);
 
   const handleSucess = (value: boolean) => {
@@ -175,6 +191,7 @@ const CheckoutPage = ({
     },
   };
 
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -187,6 +204,7 @@ const CheckoutPage = ({
       </DialogTrigger>
       <DialogContent>
         <DialogTitle>Top Up</DialogTitle>
+
         <DialogDescription>
           {!success ? (
             "Complete your payment below."
@@ -205,6 +223,7 @@ const CheckoutPage = ({
               paymentIntentId={paymentIntentId}
               handleSuccess={handleSucess}
             />
+
           </Elements>
         ) : (
           <DialogClose>
@@ -219,3 +238,21 @@ const CheckoutPage = ({
 };
 
 export default CheckoutPage;
+    // try {
+    //   const response = await fetch('/stripe/confirm-payment', {
+    //     method: 'POST',
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //     },
+    //     body: JSON.stringify({
+    //       paymentIntentId: paymentIntentId,
+    //       paymentMethod: paymentMethod.id,
+    //     }),
+    //   });
+
+    //   const result = await response.json();
+    // console.log("RESULTS",result)
+    // } catch (error) {
+    //   console.error("Error confirming payment:", error);
+    //   setErrorMessage("An unexpected error occurred. Please try again.");
+    // }

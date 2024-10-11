@@ -78,7 +78,7 @@ export function Users({ users, isSubAdmin, isPayment, isUser }: UsersProps) {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {users.map((user: User) => (
+        {users?.map((user: User) => (
           <TableRow key={user._id}>
             <TableCell className="flex items-center gap-3 cursor-pointer">
               <Dialog>
