@@ -1,7 +1,9 @@
 "use client";
 import dynamic from 'next/dynamic';
 import Image from "next/image";
-import React, { useState } from "react";
+
+import React, { useEffect, useState } from "react";
+
 import RoleGuard from '@/components/RoleGuard';
 import DashboardLayout from "../layouts/DashboardLayout";
 import DashboardData from '@/components/DashboardData';
@@ -11,27 +13,24 @@ import UserIcon from "@/public/assets/Image/IconPNG.png";
 import TaskIcon from "@/public/assets/Image/Task.svg";
 import { useAuth } from '@/components/WithAuth/withAuth';
 
+import { useAppDispatch } from '@/lib/hooks';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/store/reducers/rootReducer';
+import { fetchUserData, setCurrentPage } from "@/store/Slices/PaymentSlice";
+
+
 function DashboardPage() {
-  const [dashboardData, setDashboardData] = useState<{ 
-    users: any; 
-    userCount: number; 
-    taskCount: number; 
-    pageData: any;
-  } | null>(null);
-
-  const [currentPage, setCurrentPage] = useState(1);
-
+  const dispatch = useAppDispatch();
+  const { users, userCount, taskCount, pageData, currentPage } = useSelector((state: RootState) => state.payment);
   const isAuthenticated = useAuth('/');
 
-  const handleDataLoaded = (data: { users: any; userCount: number; taskCount: number; pageData: any }) => {
-    setDashboardData(data);
-  };
-
   const handlePageChange = (page: number) => {
-    setCurrentPage(page);
+    dispatch(setCurrentPage(page));
   };
 
-  console.log(dashboardData);
+  useEffect(() => {
+    dispatch(fetchUserData({ page: currentPage, limit: pageData?.limit}));
+  }, [dispatch, pageData, currentPage]);
 
   if (!isAuthenticated) {
     return null;
@@ -40,9 +39,6 @@ function DashboardPage() {
   return (
     <RoleGuard allowedRoles={[1, 4]}>
     <DashboardLayout Active={1}>
-      <DashboardData onDataLoaded={handleDataLoaded} />
-      
-      {dashboardData && (
       <div className="flex flex-col gap-4">
         <div className="pl-[1.75em] mx-2 mt-3 border border-border bg-white rounded-md">
           <h1 className="font-semibold text-[1.875rem] leading-[2.813rem] mt-[2rem] ">Dashboard</h1>
@@ -54,7 +50,7 @@ function DashboardPage() {
           <section className="flex items-center mb-[2em] justify-start gap-[13.313em] ">
             <div className="flex flex-col items-start space-y-1">
               <Image src={UserIcon} alt="Users Icon" width={42} height={42} />
-              <h1 className="text-[1.625rem] leading-[2.438rem] font-bold pt-[0.313rem]">{dashboardData.userCount}</h1>
+              <h1 className="text-[1.625rem] leading-[2.438rem] font-bold pt-[0.313rem]">{userCount}</h1>
               <p className="text-[0.875rem] leading-[1.313rem] my-3 text-subTitleColor">
                 Total Users
               </p>
@@ -62,7 +58,7 @@ function DashboardPage() {
 
             <div className="flex flex-col items-start space-y-1 ml-4">
               <Image src={TaskIcon} alt="Users Icon" width={42} height={42} />
-              <h1 className="text-[1.625rem] leading-[2.438rem] font-bold pt-[0.313rem]">{dashboardData.taskCount}</h1>
+              <h1 className="text-[1.625rem] leading-[2.438rem] font-bold pt-[0.313rem]">{taskCount}</h1>
               <p className="text-[0.875rem] leading-[1.313rem] text-subTitleColor">
                 Total Task Created
               </p>
@@ -78,15 +74,15 @@ function DashboardPage() {
             </p>
 
             <div className="flex flex-col items-stretch space-y-14 w-full">
-              {dashboardData?.users?.length ? (
+              {users?.length ? (
                 <>
-                  <Users users={dashboardData.users} isSubAdmin={false} isPayment={false} />
+                  <Users users={users} isSubAdmin={false} isPayment={false} />
                   <Pagination
                     currentPage={currentPage}
-                    totalPages={dashboardData?.pageData?.totalPages}
-                    totalItems={dashboardData?.pageData?.totalItems}
+                    totalPages={pageData?.totalPages}
+                    totalItems={pageData?.totalItems}
                     onPageChange={handlePageChange}
-                    limit={dashboardData?.pageData?.limit}
+                    limit={pageData?.limit}
                   />
                 </>
               ) : null}
@@ -94,7 +90,6 @@ function DashboardPage() {
           </div>
         </div>
       </div>
-      )}
     </DashboardLayout>
     </RoleGuard>
   );

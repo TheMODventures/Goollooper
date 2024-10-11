@@ -6,10 +6,11 @@ import { fetchUserData } from "@/store/Slices/PaymentSlice";
 import { useSelector } from "react-redux";
 
 interface DashboardDataProps {
+  currentPage: number;
   onDataLoaded: (data: { users: any; userCount: number; taskCount: number; pageData: any }) => void;
 }
 
-const DashboardData: React.FC<DashboardDataProps> = ({ onDataLoaded }) => {
+const DashboardData: React.FC<DashboardDataProps> = ({ currentPage, onDataLoaded }) => {
   const dispatch = useAppDispatch();
   const { users, userCount, taskCount, pageData } = useSelector((state: RootState) => state.payment);
   const [isLoading, setIsLoading] = useState(true);
@@ -17,7 +18,7 @@ const DashboardData: React.FC<DashboardDataProps> = ({ onDataLoaded }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        await dispatch(fetchUserData({ page: 1, limit: pageData?.limit ?? 10 })); 
+        await dispatch(fetchUserData({ page: currentPage, limit: pageData?.limit ?? 10 })); 
       } catch (error) {
         console.error("Error fetching user data:", error);
       } finally {
@@ -27,7 +28,9 @@ const DashboardData: React.FC<DashboardDataProps> = ({ onDataLoaded }) => {
     };
 
     fetchData();
-  }, [dispatch, pageData?.limit, onDataLoaded, pageData, taskCount, userCount, users]);
+
+  }, [dispatch, currentPage, pageData?.limit, onDataLoaded, pageData, taskCount, userCount, users]);
+
 
   return isLoading ? <div>Loading dashboard data...</div> : null; 
 };

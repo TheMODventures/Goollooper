@@ -19,13 +19,17 @@ export const ChatList = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredChats, setFilteredChats] = useState(chats);
 
-   useEffect(() => {
+  useEffect(() => {
     if (searchQuery.trim() === '') {
       setFilteredChats(chats);
     } else {
-      const filtered = chats.filter((chat) =>
-        chat.groupName?.toLowerCase().includes(searchQuery.toLowerCase())
-      );
+      const filtered = chats.filter((chat: Chat) => {
+        return chat.participants.some((participant: any) => 
+          participant._id === chat.createdBy && 
+          (participant.firstName?.toLowerCase().includes(searchQuery.toLowerCase()) || 
+           participant.lastName?.toLowerCase().includes(searchQuery.toLowerCase()))       
+        );
+      });
       setFilteredChats(filtered);
     }
   }, [searchQuery, chats]);

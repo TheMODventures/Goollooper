@@ -37,7 +37,7 @@ export default function IndustryPage() {
     [dispatch]
   );
 
-  console.log(industries);
+
 
   return (
     <DashboardLayout>

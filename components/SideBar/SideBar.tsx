@@ -152,7 +152,7 @@ export default function SideBar({
     <>
       <aside className="fixed min-h-screen w-[15.688em] flex-col pt-[1.438em] pb-8 z-10 bg-white border-r border-border">
         <div className="flex items-center space-x-[0.625em] px-[1.5em]">
-          <Image src={Logo1} alt="" width={37} height={37} className=""/>
+          <Image src={Logo1} alt="" width={37} height={37}/>
           <Image src={Logo2} alt="" width={87} height={60} />
         </div>
 
@@ -202,7 +202,9 @@ export default function SideBar({
                   src={`${IMAGE_URL}${user?.profileImage}`}
                   alt="@shadcn"
                 />
-                <AvatarFallback>CN</AvatarFallback>
+                <AvatarFallback>
+                  {`${user?.firstName ? user?.firstName?.charAt(0) : "N"}${user?.lastName ? user?.lastName?.charAt(0) : "A"}`}
+                </AvatarFallback>
               </Avatar>
               <Image src={ProfileDropdownIcon} alt="Arrow" width={11} height={11} />
             </DropdownMenuTrigger>
@@ -214,7 +216,9 @@ export default function SideBar({
                     alt="@shadcn"
                     className="w-[4.188em] h-[4.188em]"
                   />
-                  <AvatarFallback className="w-[4.188em] h-[4.188em]">CN</AvatarFallback>
+                  <AvatarFallback className="w-[4.188em] h-[4.188em]">
+                    {`${user?.firstName ? user?.firstName?.charAt(0) : "N"}${user?.lastName ? user?.lastName?.charAt(0) : "A"}`}
+                  </AvatarFallback>
                 </Avatar>
               </div>
               <DropdownMenuLabel className="text-[0.875rem]">{`${user?.firstName} ${user?.lastName}`}</DropdownMenuLabel>

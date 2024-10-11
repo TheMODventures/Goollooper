@@ -21,8 +21,35 @@ const SupportPage = () => {
   const [chats, setChats] = useState<Chat[]>([]);
   const [messages, setMessages] = useState<any>([]);
   const [chatData, setChatData] = useState<Chat | null | any>(null);
+  const [refresh, setRefresh] = useState(false);
 
-  const initializeSocket = useCallback(() => {
+  // const initializeSocket = useCallback(() => {
+  //   socketServices.initializeSocket(accessToken);
+  //   const reqData = {
+  //     userId: user?._id,
+  //     chatSupport: true,
+  //     page: 1,
+  //   };
+  //   socketServices.emit("getChats", reqData);
+  //   socketServices.on(`getChats/${user?._id}`, (data: any) => {
+  //     // console.log({ data });
+  //     setChats(data);
+  //   });
+
+  //   try {
+  //     socketServices.on("closeChatSupportTicket/66c5cbc2750212bbdbe13157", (data: any) => {
+  //       console.log("socket chat closed data:", { data });
+  //     });
+  //   } catch (error: any) {
+  //     console.log("Mark as error", error);
+  //   }
+
+  //   return () => {
+  //     socketServices.disconnect();
+  //   };
+  // }, [accessToken, user?._id]);
+
+  useEffect(() => {
     socketServices.initializeSocket(accessToken);
     const reqData = {
       userId: user?._id,
@@ -31,27 +58,15 @@ const SupportPage = () => {
     };
     socketServices.emit("getChats", reqData);
     socketServices.on(`getChats/${user?._id}`, (data: any) => {
-      console.log({ data });
+      console.log("chat", data);
+      console.log(user?._id);
       setChats(data);
     });
-
-    try {
-      socketServices.on("closeChatSupportTicket/66c5cbc2750212bbdbe13157", (data: any) => {
-        console.log("socket chat closed data:", { data });
-      });
-    } catch (error: any) {
-      console.log("Mark as error", error);
-    }
 
     return () => {
       socketServices.disconnect();
     };
-  }, [accessToken, user?._id]);
-
-  useEffect(() => {
-    const cleanup = initializeSocket();
-    return cleanup;
-  }, [initializeSocket]);
+  }, [accessToken, user?._id, refresh]);
 
   useEffect(() => {
     if (!chatData) return;
@@ -166,10 +181,9 @@ const SupportPage = () => {
     } catch (error: any) {
       console.log("Mark as complete error", error);
     }
+    setRefresh(prev => !prev);
   }, []);
     
-
-  // const handleSendPhoto = async (image) => {};
   if (!isAuthenticated) {
     return null;
   };

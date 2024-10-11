@@ -7,6 +7,9 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
+import { IMAGE_URL } from "@/lib/constants";
+
+
 export function SubAdminModal({ user }: { user: User }) {
   return (
     <DialogContent className=" w-[30%] ">
@@ -18,12 +21,14 @@ export function SubAdminModal({ user }: { user: User }) {
             <div className="flex items-center flex-col mt-10 h-[30%]">
               <Image
                 className="rounded-full"
-                src={"/assets/Image/userPhoto.png"}
-                alt=" "
+
+                src={user.profileImage ? `${IMAGE_URL}${user.profileImage}` : "/assets/Image/userPhoto.png"}
+                alt="user-profile"
                 width={70}
                 height={70}
               />
-              <h1 className="mt-2 font-bold text-black">Lincoln Korsgaard</h1>
+              <h1 className="mt-2 font-bold text-black">{`${user?.firstName} ${user?.lastName}`}</h1>
+
 
               <div className="mt-3 text-center">
                 <p className="text-PrimaryColor">

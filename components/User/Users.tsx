@@ -11,13 +11,9 @@ import {
 } from "@/components/ui/table";
 import { User, UsersProps } from "@/types/type";
 import Image from "next/image";
-import React, { useEffect } from "react";
+import React from "react";
 import {
   Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { IMAGE_URL } from "@/lib/constants";
@@ -130,12 +126,16 @@ export function Users({ users, isSubAdmin, isPayment, isUser }: UsersProps) {
 
             {!isPayment ? (
               <>
-                <TableCell>{user.phone}</TableCell>
-                <TableCell>{user.gender}</TableCell>
+                <TableCell>
+                  {user?.countryCode === "US"
+                    ? `(${user?.phone?.slice(0, 3) ?? ''}) ${user?.phone?.slice(3, 6) ?? ''}-${user?.phone?.slice(6) ?? ''}`
+                    : user?.phone}
+                </TableCell>
+                <TableCell>{user?.gender}</TableCell>
               </>
             ) : (
               <>
-                <TableCell>{user?.amount}</TableCell>
+                <TableCell>{`$${user?.amount}`}</TableCell>
                 <TableCell>{user?.type}</TableCell>
               </>
             )}
@@ -156,16 +156,18 @@ export function Users({ users, isSubAdmin, isPayment, isUser }: UsersProps) {
                     : "text-red-500 font-bold"
                 }`}
               >
-                {user.isActive ? "Active" : "Inactive"}
+                {user.isActive ? "Active" : "Offline"}
               </TableCell>
             )}
             {isPayment ? (
               <TableCell>
-                <ConfirmationModal
-                  isAccept={true}
-                  // amount={user.gooollooperAmount}
-                  onAccept={handleWithdraw}
-                />
+                {user.type === "Withdraw" ? (
+                    <ConfirmationModal
+                    isAccept={true}
+                    // amount={user.gooollooperAmount}
+                    onAccept={handleWithdraw}
+                  />
+                ) : null}
               </TableCell>
             ) : (
               <TableCell>

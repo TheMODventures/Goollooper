@@ -3,14 +3,12 @@ import React, { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 import DashboardLayout from "../layouts/DashboardLayout";
-import Editor from "@/components/Editor/Editor";
 import PushInfomation from "@/components/Pushinfomation/Push";
 import { DatePicker } from "@/components/DatePicker/DatePicker";
 import { Button } from "@/components/ui/button";
 
 import { getNotification, getUsers, sendNotification } from "@/api";
 import { User } from "@/types/type";
-import QuillToolbar from "@/components/Editor/Toolbar";
 import RoleGuard from "@/components/RoleGuard";
 import { useAuth } from "@/components/WithAuth/withAuth";
 
@@ -134,7 +132,10 @@ const NotificationPage = () => {
           </div>
 
           <div className="mt-[0.875em] bg-white border border-border rounded-lg">
-            <div className="mt-[0.688em]">
+
+            <h1 className="w-full px-[1.4rem] mt-[0.688em] text-[1.4rem] leading-[2.813rem] font-bold">Notification Content<span className="text-PrimaryColor"> *</span></h1>
+            <div className="">
+
               <textarea className="h-calc-editor-screen w-full px-[1.4rem] pt-2" placeholder="Please write your notification content" onChange={(e) => setContent(e.target.value)} />
             </div>
 

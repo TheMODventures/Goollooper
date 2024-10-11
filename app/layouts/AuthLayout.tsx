@@ -1,5 +1,5 @@
 import Image from "next/image";
-import Picture from "@/public/assets/Image/BgPicture.png"; // Import your image file
+import Picture from "@/public/assets/Image/login-bg.svg"; // Import your image file
 import Logo from "@/public/assets/Image/Logo.svg";
 
 import { AuthModule } from "@/types/type";
@@ -16,7 +16,9 @@ const AuthLayout: React.FC<AuthModule> = ({
   return (
     <div className="flex justify-start h-screen overflow-hidden">
       <section className="w-1/2 h-full">
-        <Image alt="login-cover-image" width={728} height={1024} src="/assets/Image/login-bg.svg"/>
+
+        <Image alt="login-cover-image" className="object-cover w-full h-full" src={Picture}/>
+
       </section>
 
       <section className="w-1/2 bg-backGroundColor flex items-center justify-center">

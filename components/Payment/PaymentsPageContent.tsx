@@ -8,7 +8,7 @@ import AmountIcon from "@/public/assets/Image/dollar.png";
 
 import { useDispatch, useSelector } from "react-redux";
 import { RootState, AppDispatch } from "@/store/store";
-import { fetchPayments, goollooperBalance, stripeBalance, withdrawGoollooperBalance } from "@/store/Slices/PaymentSlice";
+import { createPaymentIntent, fetchPayments, goollooperBalance, stripeBalance, withdrawGoollooperBalance } from "@/store/Slices/PaymentSlice";
 import {
     Tooltip,
     TooltipContent,
@@ -21,7 +21,14 @@ import Pagination from "@/components/User/Pagination/Pagination";
 import { ConfirmationModal } from "@/components/ConfirmationModal";
 import DashboardLayout from "@/app/layouts/DashboardLayout";
 import { formatAmount } from "@/lib/utils";
-
+import Search from "../Searching/Search";
+import { Button } from "../ui/button";
+import { loadStripe } from '@stripe/stripe-js';
+import { Input } from "../ui/input";
+import { Elements } from "@stripe/react-stripe-js";
+import ExpressCheckout from "./ExpressCheckout";
+import CheckoutPage from "./ExpressCheckout";
+import { set } from "date-fns";
 
 const PaymentsPageContent = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -33,19 +40,22 @@ const PaymentsPageContent = () => {
 
     const [isLoading, setIsLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState<number>(1);
+    const [type, setType] = useState<string>("");
+    const [amount, setAmount] = useState<number>(0);
+    const [clientSecret, setClientSecret] = useState<string>("");
+    const [paymentIntentId, setPaymentIntentId] = useState<string>("");
     const [pageData, setPageData] = useState({
         totalPages: 0,
         totalItems: 0,
-        limit: 5,
+        limit: 10,
     });
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                await dispatch(fetchPayments({ page: currentPage, limit: pageData.limit })).unwrap();
+                await dispatch(fetchPayments({ page: currentPage, limit: pageData.limit, type: type })).unwrap();
                 await dispatch(stripeBalance()).unwrap();
                 await dispatch(goollooperBalance()).unwrap();
-                console.log("Fetched payments:", goollooperBalanceData);
             } catch (error) {
                 console.error("Error fetching payments:", error);
             } finally {
@@ -54,7 +64,9 @@ const PaymentsPageContent = () => {
         };
 
         fetchData();
-    }, [dispatch, currentPage, pageData.limit, goollooperBalanceData]);
+
+    }, [dispatch, currentPage, pageData.limit, goollooperBalanceData, type]);
+
 
 
     const handlePageChange = (page: number) => {
@@ -70,16 +82,32 @@ const PaymentsPageContent = () => {
         }
     };
 
+    const handleFilter = (value: string | number) => {
+        if (typeof value === "string") setType(value);
+    }
+
+    const fetchPaymentIntent = async (value: number) => {
+        try {
+            console.log("Fetching payment intent for amount:", value);
+            const response = await dispatch(createPaymentIntent(value)).unwrap();
+            console.log("Payment intent response:", response.client_secret);
+            setClientSecret(response.client_secret);
+            setPaymentIntentId(response.id);
+        } catch (error) {
+            console.error("Error creating payment intent:", error);
+        }
+    };
+
     return (
         <DashboardLayout Active={7}>
             <div className="mx-[0.813em] my-[0.688em] border border-border bg-white rounded-md pl-[1.75em] pt-[2rem]">
 
-                <section className="flex items-center mb-[2em] justify-start gap-[12.313em] ">
+                <section className="grid grid-cols-4 items-center mb-[2em] justify-between">
                     <div className="flex flex-col items-start space-y-1">
                         <Image src={PendingIcon} alt="Users Icon" width={40} height={40} />
                         <h1 className="text-[1.625rem] leading-[2.438rem] font-bold pt-[0.313rem]">${formatAmount(stripeBalanceData?.pending)}</h1>
                         <div className="flex flex-row gap-2 items-center">
-                            <p className="text-[0.875rem] leading-[1.313rem] my-3 text-subTitleColor">
+                            <p className="text-[0.875rem] leading-[1.313rem] text-subTitleColor">
                                 Total Pending Amount
                             </p>
                             <TooltipProvider>
@@ -99,9 +127,7 @@ const PaymentsPageContent = () => {
 
                     <div className="flex flex-col items-start space-y-1 ml-4">
                         <Image src={CompletedIcon} alt="Users Icon" width={42} height={42} />
-
                         <h1 className="text-[1.625rem] leading-[2.438rem] font-bold pt-[0.313rem]">${formatAmount(stripeBalanceData?.available)}</h1>
-
                         <p className="text-[0.875rem] leading-[1.313rem] text-subTitleColor">
                             Total Available Amount
                         </p>
@@ -121,22 +147,24 @@ const PaymentsPageContent = () => {
                             Total Goollooper&apos;s Amount
                         </p>
                     </div>
+                    <div className="flex flex-col gap-2 w-2/3 m-auto">
+                        <Input placeholder="Please enter an amount" onChange={(e)=> {
+                            setAmount(parseInt(e.target.value));
+                        }} />
+                        <CheckoutPage amount={amount} handleClientSecret={fetchPaymentIntent} clientSecret={clientSecret} paymentIntentId={paymentIntentId} />
+                    </div>
                 </section>
 
-                <div>
-                    {payments?.result?.length > 0 ? (
-                        <>
-                            <Users users={payments.result} isSubAdmin={false} isPayment={true} />
-                            <Pagination
-                                currentPage={currentPage}
-                                totalPages={pageData.totalPages}
-                                totalItems={pageData.totalItems}
-                                onPageChange={handlePageChange}
-                                limit={pageData.limit}
-                            />
-                        </>
-
-                    ) : null}
+                <div className="pb-4">
+                    <Search isSubAdmin={false} isUser={false} users={payments.result} onRoleFilterChange={handleFilter} />
+                    <Users users={payments.result} isSubAdmin={false} isPayment={true} />
+                    <Pagination
+                        currentPage={currentPage}
+                        totalPages={payments?.pagination?.totalPages}
+                        totalItems={payments?.pagination?.totalItems}
+                        onPageChange={handlePageChange}
+                        limit={pageData.limit}
+                    />
                 </div>
             </div>
         </DashboardLayout>

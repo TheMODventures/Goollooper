@@ -17,6 +17,8 @@ const initialState: PaymentState = {
   singleService: null,
   servicePagination: null,
   loading: false,
+  currentPage: 1,
+  clientSecret: "",
   pageData: {
     totalPages: 0,
     totalItems: 0,
@@ -45,7 +47,7 @@ export const fetchUserData = createAsyncThunk(
     try {
       let userRes;
       if (isSubAdmin) {
-        userRes = await getSubadmin(page, limit);
+        userRes = await getSubadmin(page, limit, search);
       } else {
         userRes = await getUsers(page, limit, search, role);
       }
@@ -63,12 +65,30 @@ export const fetchUserData = createAsyncThunk(
   }
 );
 
+export const createPaymentIntent = createAsyncThunk(
+  "payment/createPaymentIntent",
+  async (amount: number, { rejectWithValue }) => {
+    try {
+      const response = await Api.post("/stripe/create-payment-intent", {
+        amount,
+      });
+      return response.data.data;
+    } catch (error: any) {
+      console.error("API Error:", error);
+      return rejectWithValue(error.response?.data?.msg || "An error occurred");
+    }
+  }
+);
+
 export const fetchPayments = createAsyncThunk(
   "payment/fetchPayments",
-  async ({ page, limit }: FetchPaymentsParams, { rejectWithValue }) => {
+  async (
+    { page, limit, type }: FetchPaymentsParams,
+    { rejectWithValue }
+  ) => {
     try {
       const response = await Api.get<ApiResponse>(
-        `/transaction?page=${page}&limit=${limit}&type=Withdraw&status=pending`
+        `/transaction?page=${page}&limit=${limit}${type ? `&type=${type}` : ""}`
       );
       return response.data.data;
     } catch (error: any) {
@@ -131,7 +151,6 @@ export const goollooperBalance = createAsyncThunk(
   async () => {
     try {
       const response = await Api.get<any>(`stripe/goollooper-balance`);
-      console.log("Goollooper Balance:", response.data.data);
       return response.data.data;
     } catch (error: any) {
       console.error("Goollooper Balance Error:", error);
@@ -146,7 +165,6 @@ export const withdrawGoollooperBalance = createAsyncThunk(
       const response = await Api.post<any>("/stripe/platform-payout", {
         amount: Number(amount),
       });
-      console.log("Withdraw Goollooper Balance:", response);
       
       return response.data.data;
     } catch (error: any) {
@@ -170,6 +188,9 @@ const paymentSlice = createSlice({
     setPageData(state, action: PayloadAction<typeof initialState.pageData>) {
       state.pageData = action.payload;
     },
+    setCurrentPage(state, action: PayloadAction<number>) {
+      state.currentPage = action.payload;
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -291,10 +312,24 @@ const paymentSlice = createSlice({
       .addCase(fetchUserData.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
+      })
+      .addCase(createPaymentIntent.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(
+        createPaymentIntent.fulfilled,
+        (state, action: PayloadAction<{ clientSecret: string }>) => {
+          state.status = "succeeded";
+          state.clientSecret = action.payload.clientSecret;
+        }
+      )
+      .addCase(createPaymentIntent.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload as string;
       });
   },
 });
 
-export const { setCurrentActiveChat, clearCurrentActiveChat, setPageData } =
+export const { setCurrentActiveChat, clearCurrentActiveChat, setPageData, setCurrentPage } =
   paymentSlice.actions;
 export default paymentSlice.reducer;

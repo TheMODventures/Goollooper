@@ -47,7 +47,9 @@ export const UserAvatar = ({
       >
         <Image
           src={chatDetailsData?.profileImage ? `${IMAGE_URL}${chatDetailsData?.profileImage}` : "/assets/Image/userPhoto.png"}
-          alt={isList ? "ListAvatar" : "DetailAvatar"}
+
+          alt={isList ? "LA" : "DA"}
+
           width={isList ? 38 : 48}
           height={isList ? 38 : 48}
           className="rounded-full"

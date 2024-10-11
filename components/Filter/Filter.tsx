@@ -25,7 +25,7 @@ export const Filter: React.FC<FilterProps> = ({ options, value, onChange }) => {
             width={14}
             height={10}
           />
-          <p>{selectedOption.label}</p>     
+          <p>Filter</p>     
         </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent>

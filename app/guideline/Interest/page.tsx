@@ -71,14 +71,18 @@ export default function InterestPage() {
           </div>
           <ScrollArea className="flex flex-col h-calc-interest-list-screen mt-[1.188em]">
             {services?.length
-              ? services?.map((service: Service) => (
-                  <Task
-                    key={service._id}
-                    title={service.industry}
-                    id={service._id}
-                    link={`/guideline/Interest`}
-                    onDelete={handleDeleteCategory}
-                  />
+
+              ? services?.map((service: any) => (
+                  service?.categories?.map((category: any) => (
+                    <Task
+                      key={category._id}
+                      title={category.category}
+                      id={category._id}
+                      link={`/guideline/Interest`}
+                      onDelete={handleDeleteCategory} 
+                    />
+                  ))
+
                 ))
               : null}
           </ScrollArea>

@@ -204,6 +204,7 @@ export interface IParticipant {
 }
 
 export interface Chat {
+  firstName: any;
   _id?: string | Types.ObjectId;
   groupName?: string;
   isChatSupport: boolean;
@@ -231,6 +232,7 @@ export interface Service {
   title: string;
   type: string;
   subServices?: SubServices[];
+  categories?: Category[];
 }
 
 
@@ -295,13 +297,16 @@ export interface PaymentState {
   singleService: Service | null;
   servicePagination: Pagination | null;
   loading: boolean;
+  currentPage: number;
   pageData: PageData;
+  clientSecret?: string;
 }
 
 
 export interface FetchPaymentsParams {
   page: number;
   limit: number;
+  type?: string;
 }
 
 export interface FetchServicesParams {

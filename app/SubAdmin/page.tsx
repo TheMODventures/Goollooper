@@ -23,13 +23,13 @@ const SubadminPage = () => {
 
   useEffect(() => {
     try {
-      dispatch(fetchUserData({ page: currentPage, limit: pageData.limit, isSubAdmin: true }));
+      dispatch(fetchUserData({ page: currentPage, limit: pageData.limit, search, isSubAdmin: true }));
     } catch (error) {
       console.error("Error fetching subadmin data:", error);
     } finally {
       setIsLoading(false);
     }
-  }, [dispatch, currentPage, pageData.limit]);
+  }, [dispatch, currentPage, search, pageData.limit]);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -49,14 +49,14 @@ const SubadminPage = () => {
     <DashboardLayout Active={3}>
       <div
         className="flex-grow flex flex-col m-2 border border-border bg-white rounded p-5"
-        // onFocus={() => fetchData(currentPage)}
       >
         <div>
           <h1 className="font-bold text-4xl">Sub Admins</h1>
           <p className="text-subTitleColor mt-5">
             You can see the overall Sub Admins of Goollooper here
           </p>
-          <Search isSubAdmin={true} value={search} onChange={handleSearchChange} users={subadmins} />
+          <Search isSubAdmin={true} isUser={false} value={search} onChange={handleSearchChange} users={subadmins} />
+
           <div className="flex flex-col items-stretch space-y-14 flex-grow overflow-auto">
             {/* Adding overflow-auto to handle the content overflow */}
             {/* <Users users={dummyUsers2}  isSubAdmin={true}/> */}
