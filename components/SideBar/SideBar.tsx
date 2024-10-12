@@ -150,7 +150,7 @@ export default function SideBar({
 
   return (
     <>
-      <aside className="fixed min-h-screen w-[15.688em] flex-col pt-[1.438em] pb-8 z-10 bg-white border-r border-border">
+      <aside className="fixed top-0 min-h-screen w-[15.688em] flex-col pt-[1.438em] pb-8 z-50 bg-white border-r border-border">
         <div className="flex items-center space-x-[0.625em] px-[1.5em]">
           <Image src={Logo1} alt="" width={37} height={37}/>
           <Image src={Logo2} alt="" width={87} height={60} />
@@ -192,9 +192,9 @@ export default function SideBar({
       </aside>
 
       {/* Add the main content here */}
-      <div>
+      <div className="">
         {/* Your main content goes here */}
-        <nav className="relative bg-white border-b border-border items-center flex justify-end  px-10  py-4">
+        <nav className="fixed right-0 top-0 w-full z-40 bg-white border-b border-border items-center flex justify-end  px-10  py-4">
           <DropdownMenu>
             <DropdownMenuTrigger className="outline-none flex items-center gap-3">
               <Avatar className="cursor-pointer">
@@ -233,7 +233,7 @@ export default function SideBar({
             </DropdownMenuContent>
           </DropdownMenu>
         </nav>
-        <div className="flex-1 ml-[15.688em]">
+        <div className="flex-1 ml-[15.688em] mt-[5.4em]">
           {children}
         </div>
       </div>

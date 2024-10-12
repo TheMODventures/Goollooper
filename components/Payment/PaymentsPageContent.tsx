@@ -22,13 +22,8 @@ import { ConfirmationModal } from "@/components/ConfirmationModal";
 import DashboardLayout from "@/app/layouts/DashboardLayout";
 import { formatAmount } from "@/lib/utils";
 import Search from "../Searching/Search";
-import { Button } from "../ui/button";
-import { loadStripe } from '@stripe/stripe-js';
 import { Input } from "../ui/input";
-import { Elements } from "@stripe/react-stripe-js";
-import ExpressCheckout from "./ExpressCheckout";
 import CheckoutPage from "./ExpressCheckout";
-import { set } from "date-fns";
 
 const PaymentsPageContent = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -41,7 +36,7 @@ const PaymentsPageContent = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [type, setType] = useState<string>("");
-    const [amount, setAmount] = useState<number>(0);
+    const [amount, setAmount] = useState<string>("");
     const [clientSecret, setClientSecret] = useState<string>("");
     const [paymentIntentId, setPaymentIntentId] = useState<string>("");
     const [pageData, setPageData] = useState({
@@ -51,20 +46,13 @@ const PaymentsPageContent = () => {
     });
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                await dispatch(fetchPayments({ page: currentPage, limit: pageData.limit, type: type })).unwrap();
-                await dispatch(stripeBalance()).unwrap();
-                await dispatch(goollooperBalance()).unwrap();
-            } catch (error) {
-                console.error("Error fetching payments:", error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
+        const intervalId = setInterval(() => {
+            dispatch(fetchPayments({ page: currentPage, limit: pageData.limit, type: type }));
+            dispatch(stripeBalance());
+            dispatch(goollooperBalance());
+        }, 5000);
 
-        fetchData();
-
+        return () => clearInterval(intervalId);
     }, [dispatch, currentPage, pageData.limit, goollooperBalanceData, type]);
 
 
@@ -97,6 +85,10 @@ const PaymentsPageContent = () => {
             console.error("Error creating payment intent:", error);
         }
     };
+
+    const resetAmount = () => {
+        setAmount("");
+    }
 
     return (
         <DashboardLayout Active={7}>
@@ -148,16 +140,16 @@ const PaymentsPageContent = () => {
                         </p>
                     </div>
                     <div className="flex flex-col gap-2 w-2/3 m-auto">
-                        <Input placeholder="Please enter an amount" onChange={(e)=> {
-                            setAmount(parseInt(e.target.value));
+                        <Input placeholder="Please enter an amount" value={amount} onChange={(e)=> {
+                            setAmount(e.target.value);
                         }} />
-                        <CheckoutPage amount={amount} handleClientSecret={fetchPaymentIntent} clientSecret={clientSecret} paymentIntentId={paymentIntentId} />
+                        <CheckoutPage amount={Number(amount) ?? 0} resetAmount={resetAmount} handleClientSecret={fetchPaymentIntent} clientSecret={clientSecret} paymentIntentId={paymentIntentId} />
                     </div>
                 </section>
 
                 <div className="pb-4">
-                    <Search isSubAdmin={false} isUser={false} users={payments.result} onRoleFilterChange={handleFilter} />
-                    <Users users={payments.result} isSubAdmin={false} isPayment={true} />
+                    <Search isSubAdmin={false} isUser={false} users={payments?.result} onRoleFilterChange={handleFilter} />
+                    <Users users={payments?.result} isSubAdmin={false} isPayment={true} />
                     <Pagination
                         currentPage={currentPage}
                         totalPages={payments?.pagination?.totalPages}

@@ -156,11 +156,13 @@ const CheckoutPage = ({
   clientSecret,
   paymentIntentId,
   handleClientSecret,
+  resetAmount,
 }: {
   amount: number;
   clientSecret: string;
   paymentIntentId: string;
   handleClientSecret: (value: number) => void;
+  resetAmount: () => void;
 }) => {
   const [success, setSucess] = useState<boolean>(false);
 
@@ -182,7 +184,7 @@ const CheckoutPage = ({
           className="text-white rounded-full py-2 bg-PrimaryColor"
           onClick={() => handleClientSecret(amount)}
         >
-          Top Up ${amount}
+          Top Up
         </button>
       </DialogTrigger>
       <DialogContent>
@@ -208,7 +210,7 @@ const CheckoutPage = ({
           </Elements>
         ) : (
           <DialogClose>
-            <button className="w-full text-white rounded-full py-2 bg-PrimaryColor">
+            <button className="w-full text-white rounded-full py-2 bg-PrimaryColor" onClick={resetAmount}>
               Close
             </button>
           </DialogClose>

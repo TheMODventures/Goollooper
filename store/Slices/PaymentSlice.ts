@@ -326,6 +326,16 @@ const paymentSlice = createSlice({
       .addCase(createPaymentIntent.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload as string;
+      })
+      .addCase(withdrawGoollooperBalance.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(withdrawGoollooperBalance.fulfilled, (state) => {
+        state.goollooperBalance = 0;
+      })
+      .addCase(withdrawGoollooperBalance.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload as string;
       });
   },
 });

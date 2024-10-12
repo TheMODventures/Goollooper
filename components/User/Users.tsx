@@ -33,7 +33,7 @@ export function Users({ users, isSubAdmin, isPayment, isUser }: UsersProps) {
   const handleUpdatePayment = async (id: string) => {
     try {
       const result = await dispatch(updatePaymentStatus(id)).unwrap();
-      console.log("Updated the status of", id, result);
+      // console.log("Updated the status of", id, result);
     } catch (error) {
       console.error("Error updating payment status:", error);
     }
@@ -42,7 +42,7 @@ export function Users({ users, isSubAdmin, isPayment, isUser }: UsersProps) {
   const handleWithdraw = async (amount: number) => {
     try {
       const result = await dispatch(withdrawPayment(amount)).unwrap();
-      console.log("Withdrawn the payment of", amount, result);
+      // console.log("Withdrawn the payment of", amount, result);
     } catch (error) {
       console.error("Error withdrawing payment:", error);
     }
@@ -78,7 +78,7 @@ export function Users({ users, isSubAdmin, isPayment, isUser }: UsersProps) {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {users.map((user: User) => (
+        {users && users?.map((user: User) => (
           <TableRow key={user._id}>
             <TableCell className="flex items-center gap-3 cursor-pointer">
               <Dialog>
