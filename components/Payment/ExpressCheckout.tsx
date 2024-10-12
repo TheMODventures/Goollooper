@@ -72,7 +72,7 @@ const CheckoutForm = ({
           setErrorMessage(confirmError.message);
         } else {
           event.complete("success");
-          console.log("Payment successful!");
+          // console.log("Payment successful!");
         }
       });
     }
@@ -121,7 +121,7 @@ const CheckoutForm = ({
       });
 
       const result = await response;
-      console.log("RESULTS", result);
+      // console.log("RESULTS", result);
       if (result.statusText === "OK") {
         handleSuccess(true);
       }

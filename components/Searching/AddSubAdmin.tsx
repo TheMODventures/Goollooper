@@ -79,7 +79,7 @@ export default function AddSubAdmin() {
         delete data.location;
       }
 
-      console.log(data);
+      // console.log(data);
 
       let addSubadminRes: any = await onAddSubAdmin(data);
       if (addSubadminRes?.data?.status) {

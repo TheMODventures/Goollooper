@@ -6,7 +6,6 @@ import React, { useEffect, useState } from "react";
 
 import RoleGuard from '@/components/RoleGuard';
 import DashboardLayout from "../layouts/DashboardLayout";
-import DashboardData from '@/components/DashboardData';
 import { Users } from "@/components/User/Users";
 import Pagination from "@/components/User/Pagination/Pagination";
 import UserIcon from "@/public/assets/Image/IconPNG.png";

@@ -52,8 +52,6 @@ export default function InterestPage() {
     [dispatch, services]
   );
 
-  console.log(services);
-
   return (
     <DashboardLayout>
       <GuidelineLayout>

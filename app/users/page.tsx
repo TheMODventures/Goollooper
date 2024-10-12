@@ -20,15 +20,12 @@ const UsersPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState(2);
-  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     try {
       dispatch(fetchUserData({ page: currentPage, limit: pageData?.limit, search, role: roleFilter }));
     } catch (error) {
       console.error("Error fetching user data:", error);
-    } finally {
-      setIsLoading(false);
     }
   }, [dispatch, currentPage, search, roleFilter, pageData?.limit]);
 

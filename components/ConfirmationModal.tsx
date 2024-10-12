@@ -29,7 +29,6 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   const [isOpen, setIsOpen] = useState(false);
 
   const handleAccept = () => {
-    console.log("Accepting...");
     if (onAccept) {
       if (isDelete && taskID) {
         onAccept(taskID); // Handle deletion

@@ -11,7 +11,6 @@ const AuthLayout: React.FC<AuthModule> = ({
   children,
   additionalText,
 }) => {
-  console.log("AuthLayout");
   
   return (
     <div className="flex justify-start h-screen overflow-hidden">

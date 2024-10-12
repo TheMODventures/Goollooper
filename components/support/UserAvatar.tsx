@@ -36,7 +36,7 @@ export const UserAvatar = ({
       (userObj: any) => userObj?._id === chatData?.createdBy
     );
     
-    console.log(`${IMAGE_URL}${chatDetailsData?.profileImage}`);
+    // console.log(`${IMAGE_URL}${chatDetailsData?.profileImage}`);
 
     return (
       <div

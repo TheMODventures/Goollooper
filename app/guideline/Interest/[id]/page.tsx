@@ -189,7 +189,6 @@ export default function InterestSubpage() {
         keyWords: filterKeyword,
       };
       dispatch(editService({ id: id, service: body }));
-      console.log("Update service:", id, body);
     }
 
     setSingleKeyword("");
@@ -204,7 +203,6 @@ export default function InterestSubpage() {
         keyWords: updatedKeywords,
       };
       dispatch(editService({ id: id, service: body }));
-      console.log("Update service:", id, body);
     }
     dispatch(handleRemoveKeyword({ subCategoryIndex, value: name }))
   };
