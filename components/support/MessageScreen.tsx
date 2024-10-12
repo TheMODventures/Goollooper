@@ -55,7 +55,7 @@ export const MessageScreen = ({
   
     const handleFileInputChange = (event: any) => {
       // When a file is selected, update the state
-      console.log(event.target.files);
+      // console.log(event.target.files);
       if (!event.target.files.length) return;
       onSend(event.target.files[0], "image");
       // setSelectedFile(event.target.files[0]);

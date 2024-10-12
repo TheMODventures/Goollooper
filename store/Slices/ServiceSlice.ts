@@ -408,7 +408,7 @@ const serviceSlice = createSlice({
     },
     setCopyKeywordsSubList: (state, action: PayloadAction<number[]>) => {
       state.copyKeywordsSubList = action.payload;
-      console.log(state.copyKeywordsSubList);
+      // console.log(state.copyKeywordsSubList);
     },
 
     setSubCategoryLevel1Index: (state, action: PayloadAction<number>) => {

@@ -19,15 +19,12 @@ const SubadminPage = () => {
   const isAuthenticated = useAuth('/');
   const [currentPage, setCurrentPage] = React.useState(1);
   const [search, setSearch] = React.useState("");
-  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     try {
       dispatch(fetchUserData({ page: currentPage, limit: pageData.limit, search, isSubAdmin: true }));
     } catch (error) {
       console.error("Error fetching subadmin data:", error);
-    } finally {
-      setIsLoading(false);
     }
   }, [dispatch, currentPage, search, pageData.limit]);
 

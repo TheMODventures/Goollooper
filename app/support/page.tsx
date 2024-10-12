@@ -23,32 +23,6 @@ const SupportPage = () => {
   const [chatData, setChatData] = useState<Chat | null | any>(null);
   const [refresh, setRefresh] = useState(false);
 
-  // const initializeSocket = useCallback(() => {
-  //   socketServices.initializeSocket(accessToken);
-  //   const reqData = {
-  //     userId: user?._id,
-  //     chatSupport: true,
-  //     page: 1,
-  //   };
-  //   socketServices.emit("getChats", reqData);
-  //   socketServices.on(`getChats/${user?._id}`, (data: any) => {
-  //     // console.log({ data });
-  //     setChats(data);
-  //   });
-
-  //   try {
-  //     socketServices.on("closeChatSupportTicket/66c5cbc2750212bbdbe13157", (data: any) => {
-  //       console.log("socket chat closed data:", { data });
-  //     });
-  //   } catch (error: any) {
-  //     console.log("Mark as error", error);
-  //   }
-
-  //   return () => {
-  //     socketServices.disconnect();
-  //   };
-  // }, [accessToken, user?._id]);
-
   useEffect(() => {
     socketServices.initializeSocket(accessToken);
     const reqData = {
@@ -58,8 +32,6 @@ const SupportPage = () => {
     };
     socketServices.emit("getChats", reqData);
     socketServices.on(`getChats/${user?._id}`, (data: any) => {
-      console.log("chat", data);
-      console.log(user?._id);
       setChats(data);
     });
 
@@ -70,23 +42,23 @@ const SupportPage = () => {
 
   useEffect(() => {
     if (!chatData) return;
-    console.log("-------1");
+    // console.log("-------1");
     socketServices.on(
       `newMessage/${chatData._id}/${user?._id}`,
       (data: any) => {
-        console.log(data, "new message received");
+        // console.log(data, "new message received");
         setMessages((prev: any) => [data, ...prev]);
         // setMessages((prev) => {
         //   return [data, ...prev];
         // });
       }
     );
-    console.log("-------2");
+    // console.log("-------2");
     const reqData = {
       userId: user?._id,
       chatId: chatData?._id,
     };
-    console.log(reqData);
+    // console.log(reqData);
 
     socketServices.emit("readMessages", reqData);
     socketServices.on(
@@ -114,20 +86,18 @@ const SupportPage = () => {
     setChatData(chatDataObj);
     socketServices.emit("getChatMessages", reqData);
     socketServices.on(`getChatMessages/${user?._id}`, (data) => {
-      console.log("-------------", { data });
+      // console.log("-------------", { data });
 
       setMessages(data?.messages?.reverse() || []);
     });
   }, [user?._id]);
 
   const handleSendMessage = useCallback(async (data: string | any, type: string) => {
-    console.log({ data });
+    // console.log({ data });
     if (type === "image") {
       try {
         const response = await sendMedia(data);
-        console.log({ response });
-
-        console.log("Response");
+        // console.log({ response });
         const reqData = {
           userId: user?._id,
           chatId: chatData?._id,
@@ -135,7 +105,7 @@ const SupportPage = () => {
           name: `${user?.firstName}`,
           mediaUrls: response?.data?.data,
         };
-        console.log({ reqData });
+        // console.log({ reqData });
 
         socketServices.emit("sendMessage", reqData);
         const newMessage = {
@@ -148,7 +118,7 @@ const SupportPage = () => {
         };
         setMessages((prev: any) => [...prev, newMessage]);
       } catch (error: any) {
-        console.log(error?.response?.data, "ERROR FROM SENDING MEDIA!");
+        // console.log(error?.response?.data, "ERROR FROM SENDING MEDIA!");
       }
     } else {
       if (data?.trim().length > 0) {
@@ -165,10 +135,10 @@ const SupportPage = () => {
           messageBody: data,
           name: `${user?.firstName}`,
         };
-        console.log("--------", reqData);
+        // console.log("--------", reqData);
 
         socketServices.emit("sendMessage", reqData);
-        console.log("--------");
+        // console.log("--------");
 
         setMessages((prev: any) => [...prev, newMessage]);
       }
@@ -179,7 +149,8 @@ const SupportPage = () => {
     try {
       socketServices.emit("closeChatSupportTicket", { chatId: chatId, userId: userId });
     } catch (error: any) {
-      console.log("Mark as complete error", error);
+      // console.log("Mark as complete error", error);
+      console.error("Mark as complete error", error);
     }
     setRefresh(prev => !prev);
   }, []);

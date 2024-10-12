@@ -38,7 +38,7 @@ export const ChatDetails = (
         setIsChecked(chatData?.isTicketClosed);
     }, [chatData, dispatch]);
     
-    console.log({chatData});
+    // console.log({chatData});
 
     return (
         <>

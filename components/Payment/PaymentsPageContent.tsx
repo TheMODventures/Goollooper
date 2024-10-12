@@ -76,7 +76,7 @@ const PaymentsPageContent = () => {
     const withdrawGoollooper = async () => {
         try {
             await dispatch(withdrawGoollooperBalance(parseInt(goollooperBalanceData))).unwrap();
-            console.log("Withdrawal successful");
+            // console.log("Withdrawal successful");
         } catch (error) {
             console.error("Error withdrawing goollooper balance:", error);
         }
