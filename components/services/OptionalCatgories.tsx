@@ -50,7 +50,7 @@ const OptionalCatgories = ({
 
   const handleRemoveSubCategoryClick = (value: string) => {
     const service = data.find((item: any) => item.title === value) as any;
-    console.log("Remove service:", service._id);
+    // console.log("Remove service:", service._id);
     dispatch(removeService(service._id));
     setData((prevData) => {
       const newData = [...prevData] as any;

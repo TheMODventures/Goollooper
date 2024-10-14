@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import ImageGrid from "./ImageGrid";
 import InfoRow from "./InfoRow";
+import ImageAvatar from "@/components/ImageAvatar";
 
 export function UserModal({ user }: { user: User }) {
   const renderGallery = () => (
@@ -23,48 +24,70 @@ export function UserModal({ user }: { user: User }) {
   );
 
   const renderVisualsValidation = () => (
-    <div className="mt-6">
-      <h1 className="text-xl font-bold text-black mb-3">Visuals validation</h1>
-      <ImageGrid images={user?.visualFiles || []} alt="user visuals" />
-    </div>
+    <>
+      {(user?.visualFiles?.length ?? 0) > 0 && (
+        <div className="mt-6">
+          <h1 className="text-xl font-bold text-black mb-3">
+            Visuals validation
+          </h1>
+          <ImageGrid images={user?.visualFiles || []} alt="user visuals" />
+        </div>
+      )}
+    </>
   );
 
   const renderBrandInformation = () => (
-    <div className="mt-6">
-      <h1 className="text-xl font-bold text-black mb-3">Brand Information</h1>
-      {user?.company?.logo && (
-        <Image
-          src={`${IMAGE_URL}${user.company.logo}`}
-          alt="company logo"
-          width={250}
-          height={250}
-          className="rounded-2xl"
-        />
+    <>
+      {(user?.company?.logo?.length ?? 0) > 0 && (
+        <div className="mt-6">
+          <h1 className="text-xl font-bold text-black mb-3">
+            Brand Information
+          </h1>
+          <Image
+            src={`${IMAGE_URL}${user?.company?.logo}`}
+            alt="company logo"
+            width={250}
+            height={250}
+            className="rounded-2xl"
+          />
+        </div>
       )}
-    </div>
+    </>
   );
 
   const renderCertifications = () => (
-    <div className="mt-6">
-      <h1 className="text-xl font-bold text-black mb-3">
-        Professional Certifications
-      </h1>
-      <ImageGrid images={user?.certificates || []} alt="user certificate" />
-    </div>
+    <>
+      {(user?.certificates?.length ?? 0) > 0 && (
+        <div className="mt-6">
+          <h1 className="text-xl font-bold text-black mb-3">
+            Professional Certifications
+          </h1>
+          <ImageGrid images={user?.certificates || []} alt="user certificate" />
+        </div>
+      )}
+    </>
   );
 
   const renderLicensing = () => (
-    <div className="mt-6">
-      <h1 className="text-xl font-bold text-black mb-3">Licensing</h1>
-      <ImageGrid images={user?.licenses || []} alt="user license" />
-    </div>
+    <>
+      {(user?.licenses?.length ?? 0) > 0 && (
+        <div className="mt-6">
+          <h1 className="text-xl font-bold text-black mb-3">Licensing</h1>
+          <ImageGrid images={user?.licenses || []} alt="user license" />
+        </div>
+      )}
+    </>
   );
 
   const renderInsurances = () => (
-    <div className="mt-6">
-      <h1 className="text-xl font-bold text-black mb-3">Insurances</h1>
-      <ImageGrid images={user?.insurances || []} alt="user insurance" />
-    </div>
+    <>
+      {(user?.insurances?.length ?? 0) > 0 && (
+        <div className="mt-6">
+          <h1 className="text-xl font-bold text-black mb-3">Insurances</h1>
+          <ImageGrid images={user?.insurances || []} alt="user insurance" />
+        </div>
+      )}
+    </>
   );
 
   return (
@@ -75,16 +98,12 @@ export function UserModal({ user }: { user: User }) {
         <DialogDescription>
           <div className="flex flex-col justify-between h-[420px]">
             <div className="flex items-center flex-col mt-10 h-[30%]">
-              <Image
-                className="rounded-full object-cover w-[6.125rem] h-[6.125rem]"
-                src={
-                  user.profileImage
-                    ? `${IMAGE_URL}${encodeURIComponent(user.profileImage)}`
-                    : "/assets/Image/userPhoto.png"
-                }
-                alt="profile-image"
-                width={98}
-                height={98}
+              <ImageAvatar
+                profileImage={user.profileImage}
+                firstName={user.firstName}
+                lastName={user.lastName}
+                isModal={true}
+                css="w-[6.125rem] h-[6.125rem]"
               />
               <h1 className="mt-2 font-bold text-black text-xl">
                 {`${user.firstName} ${user.lastName}`}

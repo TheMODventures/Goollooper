@@ -1,19 +1,14 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../store";
 import { toast } from "react-toastify";
-import {
-  addService,
-
-  getService,
-  getServices,
-  updateService,
-} from "@/api";
+import { addService, getService, getServices, updateService } from "@/api";
 import {
   FetchServicesParams,
   GetIndustriesResponse,
   Industry,
 } from "@/types/type";
 import { Api } from "@/api/Middleware";
+import { any } from "zod";
 
 interface ServiceResponse {
   data: Category[];
@@ -40,7 +35,6 @@ export interface SubService {
   subCategories: SubService[];
 
   hasSubCategory?: boolean;
-
 }
 
 interface Category {
@@ -49,7 +43,7 @@ interface Category {
   type: string;
   industry: string | null;
   parent: string | null;
-
+  categories?: any[];
   isDeleted?: boolean;
   hasSubCategory?: boolean;
 
@@ -139,7 +133,6 @@ export const saveService = createAsyncThunk(
 export const editService = createAsyncThunk(
   "service/updateService",
   async (
-
     { id, service }: { id: string; service: any },
 
     { rejectWithValue }
@@ -157,7 +150,6 @@ export const removeService = createAsyncThunk(
   "service/deleteService",
   async (id: string, { rejectWithValue }) => {
     try {
-
       const response = await Api.delete(`/service/delete/${id}`);
 
       return response.data.data;
@@ -212,7 +204,6 @@ export const updateSubService = createAsyncThunk(
       title,
       type,
       parent,
-
     }: {
       id: string | null;
       title: string;
@@ -327,6 +318,10 @@ const serviceSlice = createSlice({
         toast.warning("Please enter a nested sub-category");
         return;
       }
+      if (!state.service.subCategories[parentIndex]) {
+        toast.warning("Please add a sub-category first");
+        return;
+      }
 
       let targetSubCategory = state.service.subCategories[parentIndex];
 
@@ -346,7 +341,7 @@ const serviceSlice = createSlice({
         }
       }
 
-      if (targetSubCategory.subCategories.some((sub) => sub.title === value)) {
+      if (targetSubCategory?.subCategories.some((sub) => sub.title === value)) {
         toast.warning("Nested sub-category already exists");
         return;
       }
@@ -361,6 +356,38 @@ const serviceSlice = createSlice({
 
       toast.success("Nested sub-category added successfully");
     },
+    handleRemoveNestedSubCategory: (
+      state,
+      action: PayloadAction<{
+        parentIndex: number;
+        value: string;
+        level: number;
+      }>
+    ) => {
+      const { parentIndex, value, level } = action.payload;
+      let targetSubCategory = state.service.subCategories[parentIndex];
+
+      for (let i = 0; i < level; i++) {
+        if (i === 0) {
+          targetSubCategory =
+            targetSubCategory.subCategories[state.subCategoryLevel1Index!];
+        } else if (i === 1) {
+          targetSubCategory =
+            targetSubCategory.subCategories[state.subCategoryLevel2Index!];
+        } else if (i === 2) {
+          targetSubCategory =
+            targetSubCategory.subCategories[state.subCategoryLevel3Index!];
+        } else if (i === 3) {
+          targetSubCategory =
+            targetSubCategory.subCategories[state.subCategoryLevel4Index!];
+        }
+      }
+
+      targetSubCategory.subCategories = targetSubCategory.subCategories.filter(
+        (sub) => sub.title !== value
+      );
+      toast.success("Nested sub-category removed successfully");
+    },
     handleAddKeyword: (
       state,
       action: PayloadAction<{ subCategoryIndex: number; value: string }>
@@ -368,6 +395,10 @@ const serviceSlice = createSlice({
       const { subCategoryIndex, value } = action.payload;
       if (!value) {
         toast.warning("Please enter a keyword");
+        return;
+      }
+      if (!state.service.subCategories[subCategoryIndex]) {
+        toast.warning("Please add a sub-category first");
         return;
       }
 
@@ -431,14 +462,28 @@ const serviceSlice = createSlice({
         (service) => service._id !== action.payload
       );
     },
-
-    updateKeywordTitle: (state, action: PayloadAction<{ index: number; value: string }>) => {
-      state.service.subCategories[state.subCategoryIndex].keyWords[action.payload.index] = action.payload.value;
+    handleRemoveInterestServices: (
+      state,
+      action: PayloadAction<{ index: number; id: string }>
+    ) => {
+      if (state.services[action.payload.index]?.categories) {
+        state.services[action.payload.index].categories = state.services[
+          action.payload.index
+        ].categories?.filter(
+        (service: any) => service?._id !== action.payload.id
+      )}
+    },
+    updateKeywordTitle: (
+      state,
+      action: PayloadAction<{ index: number; value: string }>
+    ) => {
+      state.service.subCategories[state.subCategoryIndex].keyWords[
+        action.payload.index
+      ] = action.payload.value;
     },
     resetServiceState: () => initialState,
-    },
-    extraReducers: (builder) => {
-
+  },
+  extraReducers: (builder) => {
     builder
       .addCase(fetchService.pending, (state) => {
         state.loading = true;
@@ -447,14 +492,12 @@ const serviceSlice = createSlice({
         state.loading = false;
         if (state.service.type === "volunteer") {
           state.service.subCategories = action.payload;
-
         }
         if (state?.service?.subCategories.length === 0) {
           action.payload.map((item: Category) => {
             item.subCategories = [];
           });
           state.service.subCategories = action.payload;
-
         }
       })
       .addCase(fetchService.rejected, (state, action) => {
@@ -481,7 +524,6 @@ const serviceSlice = createSlice({
         if (state.service.type !== "interest") {
           state.service = action.payload;
         }
-
       })
       .addCase(editService.rejected, (state, action) => {
         state.loading = false;
@@ -529,7 +571,7 @@ const serviceSlice = createSlice({
       })
       .addCase(addSubService.fulfilled, (state, action) => {
         state.loading = false;
-        state.subServices.push(action.payload);
+        state.subServices.push(action.payload.data);
       })
       .addCase(addSubService.rejected, (state, action) => {
         state.loading = false;
@@ -544,9 +586,7 @@ export const {
   handleAddSubCategory,
   handleCategory,
   handleSingleSubCategory,
-
   handleUpdateSubCategory,
-
   handleRemoveSubCategory,
   handleCurrentSubCategory,
   resetServiceState,
@@ -558,10 +598,11 @@ export const {
   setSubCategoryLevel3Index,
   setSubCategoryLevel4Index,
   handleRemoveServices,
-
+  handleRemoveNestedSubCategory,
   copyKeyword,
   setCopyKeywordsSubList,
   updateKeywordTitle,
+  handleRemoveInterestServices,
 } = serviceSlice.actions;
 
 export const selectService = (state: RootState) => state.service.service;

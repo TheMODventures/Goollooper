@@ -25,27 +25,13 @@ import { ConfirmationModal } from "../ConfirmationModal";
 import { EllipsisVertical } from "lucide-react";
 import { SubAdminModal } from "./Modals/SubAdminModal";
 import { UserModal } from "./Modals/UserModal";
+import ImageAvatar from "../ImageAvatar";
 
 export function Users({ users, isSubAdmin, isPayment, isUser }: UsersProps) {
 
   const dispatch = useDispatch<AppDispatch>();
-
-  const handleUpdatePayment = async (id: string) => {
-    try {
-      const result = await dispatch(updatePaymentStatus(id)).unwrap();
-      // console.log("Updated the status of", id, result);
-    } catch (error) {
-      console.error("Error updating payment status:", error);
-    }
-  };
-
-  const handleWithdraw = async (amount: number) => {
-    try {
-      const result = await dispatch(withdrawPayment(amount)).unwrap();
-      // console.log("Withdrawn the payment of", amount, result);
-    } catch (error) {
-      console.error("Error withdrawing payment:", error);
-    }
+  const handleWithdraw = async (idOrAmount: string | number) => {
+    dispatch(withdrawPayment(idOrAmount as number));
   };  
 
   return (
@@ -83,23 +69,7 @@ export function Users({ users, isSubAdmin, isPayment, isUser }: UsersProps) {
             <TableCell className="flex items-center gap-3 cursor-pointer">
               <Dialog>
                 <DialogTrigger className="flex items-center gap-2">
-                <div className="rounded-full overflow-hidden w-[30px] h-[30px]">
-                  <Image
-                    src={
-                      isPayment
-                        ? user?.user?.profileImage
-                          ? `${IMAGE_URL}${user.user.profileImage}`
-                          : "/assets/Image/userPhoto.png"
-                        : user.profileImage
-                        ? `${IMAGE_URL}${user.profileImage}`
-                        : "/assets/Image/userPhoto.png"
-                    }
-                    alt="User-Profile-Pic"
-                    width={30}
-                    height={30}
-                    className="object-cover w-full h-full"
-                  />
-                </div>
+                  <ImageAvatar profileImage={isPayment ? user?.user?.profileImage : user?.profileImage} firstName={isPayment ? user?.user?.firstName : user.firstName} lastName={isPayment ? user?.user?.lastName : user.lastName} />
                   <p className="text-xs">
                     {`${isPayment ? user?.user?.firstName : user.firstName} ${isPayment ? user?.user?.lastName : user.lastName}`}
                   </p>{" "}

@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import { Message, User } from "@/types/type";
 import { Input } from "../ui/input";
@@ -68,6 +68,14 @@ export const MessageScreen = ({
     const closePreview = () => {
       setPreviewImage(null);
     };
+
+    const scrollRef = useRef<HTMLDivElement | null>(null);
+
+    useEffect(() => {
+      if (scrollRef.current) {
+        scrollRef.current.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, [groupedMessages]);
   
     return (
       <div className="flex flex-col">
@@ -126,6 +134,7 @@ export const MessageScreen = ({
           })}
             </div>
           ))}
+          <div ref={scrollRef} />
         </ScrollArea>
   
         {/* Admin Input Field at the bottom */}

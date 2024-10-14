@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/dialog";
 import { IMAGE_URL } from "@/lib/constants";
 import InfoRow from "./InfoRow";
+import ImageAvatar from "@/components/ImageAvatar";
 
 export function SubAdminModal({ user }: { user: User }) {
   return (
@@ -18,12 +19,12 @@ export function SubAdminModal({ user }: { user: User }) {
         <DialogDescription>
           <div className="flex flex-col justify-between item h-[340px]">
             <div className="flex items-center flex-col mt-10 h-[30%]">
-              <Image
-                className="rounded-full"
-                src={user.profileImage ? `${IMAGE_URL}${user.profileImage}` : "/assets/Image/userPhoto.png"}
-                alt="user-profile"
-                width={70}
-                height={70}
+              <ImageAvatar
+                profileImage={user.profileImage}
+                firstName={user.firstName}
+                lastName={user.lastName}
+                isModal={true}
+                css="w-[6.125rem] h-[6.125rem]"
               />
               <h1 className="mt-2 font-bold text-black">{`${user?.firstName} ${user?.lastName}`}</h1>
 

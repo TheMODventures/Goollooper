@@ -34,9 +34,9 @@ export default function VolunteerPage() {
     setCurrentPage(page);
   };
 
-  const handleDeleteCategory = useCallback((id: string) => {
-    dispatch(handleRemoveServices(id));
-    dispatch(removeService(id));
+  const handleDeleteCategory = useCallback((id: string | number) => {
+    dispatch(handleRemoveServices(id as string));
+    dispatch(removeService(id as string));
   }, [dispatch]);
 
   return (

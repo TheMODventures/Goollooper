@@ -51,6 +51,7 @@ import {
   handleUpdateSubCategory,
   removeService,
   updateKeywordTitle,
+  handleRemoveNestedSubCategory,
 } from "@/store/Slices/ServiceSlice";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import CopyToModal from "@/components/services/CopyToModal";
@@ -153,6 +154,7 @@ export default function InterestSubpage() {
   const handleRemoveSubCategoryClick = (value: string) => {
     if (serviceId === "add") {
       dispatch(handleRemoveSubCategory(value));
+      console.log("Remove service:", value);
     } else {
       dispatch(removeService(value));
       const title =
@@ -269,6 +271,18 @@ export default function InterestSubpage() {
     return category?.subCategories || [];
   }
 
+  function handleRemoveNestedSubCategoryClick(
+    name: string,
+    level: number,
+  ) {
+    console.log(name, level);
+    dispatch(handleRemoveNestedSubCategory({
+      parentIndex: subCategoryIndex,
+      value: name,
+      level,
+    }));
+  }
+
   function handleLevelIndexChange(level: number, index: number) {
     switch (level) {
       case 0:
@@ -293,16 +307,25 @@ export default function InterestSubpage() {
 
 
   const handleSaveService = () => {
-    dispatch(saveService({ service }))
-      .unwrap()
-      .then(() => {
-
+    if (!service?.industry && !service?.title && service?.subCategories?.length === 0) {
+      toast.warning("Please select an industry group");
+      return;
+    } else if (!service?.title) {
+      toast.warning("Please input a category");
+      return;
+    } else if (service?.subCategories?.length === 0) {
+      toast.warning("Please add at least one sub category");
+      return;
+    } else if (!service?.industry) {
+      toast.warning("Please fill all required fields");
+      return;
+    } else {
+      toast.success(`Service ${service?.title} saved successfully`);
+      dispatch(saveService({ service }));
+      setTimeout(() => {
         router.push("/guideline/Interest");
-
-      })
-      .catch((error: any) => {
-        console.error("Failed to save service:", error);
-      });
+      }, 1000);
+    }
   };
 
   return (
@@ -345,7 +368,7 @@ export default function InterestSubpage() {
                   Industry Group: <span className="text-PrimaryColor ml-1">{serviceTitle}</span>
                 </h2> */}
                 <h6 className="flex flex-col">
-                  Category:{" "}
+                  Category:
                   <span className="text-PrimaryColor ml-1 text-[1.875em] font-bold">
                     {serviceTitle}
                   </span>
@@ -376,7 +399,7 @@ export default function InterestSubpage() {
                   text={item?.title}
                   selected={subCategoryIndex}
                   isSubCategory={true}
-                  isDeleteId={true}
+                  isDeleteId={serviceId === "add" ? false : true}
                   onSubCategoryClick={handleRemoveSubCategoryClick}
                   currentSelected={handleCurrentSubCategoryClick}
                 />
@@ -462,8 +485,17 @@ export default function InterestSubpage() {
               </TabsContent>
               <TabsContent value="nestedSubCategory">
                 {serviceId === "add" ? (
-                  [0, 1, 2, 3].map((level) => (
+                  [0, 1, 2, 3].map((level) => {
+                    const parentNestedAvailable = getNestedSubCategories(
+                      service,
+                      subCategoryIndex,
+                      level - 1
+                    ).length > 0;
+
+                    return (
                     <div key={level}>
+                      {level === 0 || parentNestedAvailable ? (
+                        <>
                       <div className="mt-10 mb-2 flex justify-between">
                         <h4 className="text-[1.5rem] leading-[0.938rem] font-normal">
                           {serviceId === "add"
@@ -514,15 +546,20 @@ export default function InterestSubpage() {
                             text={item?.title}
                             selected={getLevelIndex(level, state)}
                             isSubCategory={true}
-                            onSubCategoryClick={handleRemoveSubCategoryClick}
+                            isNested={true}
+                            level={level}
+                            onNestedClick={handleRemoveNestedSubCategoryClick}
                             currentSelected={(index) =>
                               handleLevelIndexChange(level, index)
                             }
                           />
                         ))}
                       </div>
+                      </>
+                      ) : null}
                     </div>
-                  ))
+                    )
+                  })
                 ) : (
                   service?.subCategories?.[subCategoryIndex]?.hasSubCategory ? 
                   <OptionalCatgories id={service?.subCategories[subCategoryIndex]?._id} level={1} title={service?.subCategories[subCategoryIndex]?.title} /> 
