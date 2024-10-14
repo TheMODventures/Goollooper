@@ -6,6 +6,7 @@ import Image from "next/image";
 import { Checkbox } from "../ui/checkbox";
 import { RootState } from "@/store/store";
 import { useSelector } from "react-redux";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 const selectCurrentActiveChat = (state: RootState) => state.payment.currentActiveChat;
 
@@ -45,15 +46,16 @@ export const UserAvatar = ({
             "gap-[1.063em]"}`}
         onClick={() => (isList && onUserClick ? onUserClick(chatData || null) : {})}
       >
-        <Image
-          src={chatDetailsData?.profileImage ? `${IMAGE_URL}${chatDetailsData?.profileImage}` : "/assets/Image/userPhoto.png"}
-
-          alt={isList ? "LA" : "DA"}
-
-          width={isList ? 38 : 48}
-          height={isList ? 38 : 48}
-          className="rounded-full"
-        />
+        <Avatar className="rounded-full">
+          <AvatarImage
+            src={chatDetailsData?.profileImage ? `${IMAGE_URL}${chatDetailsData?.profileImage}` : "/assets/Image/userPhoto.png"}
+            alt={isList ? "LA" : "DA"}
+            sizes={isList ? "38" : "48"}
+          />
+          <AvatarFallback>
+            {isList ? `${chatDetailsData?.firstName?.charAt(0)}${chatDetailsData?.lastName?.charAt(0)}` : `${chatDetailsData?.firstName?.charAt(0)}${chatDetailsData?.lastName?.charAt(0)}`}
+          </AvatarFallback>
+        </Avatar>
         <div>
           <div className={isList ? "flex flex-col" : "flex flex-row items-center gap-[0.25em]"}>
             <h3 className={isList ? "text-[0.875rem] leading-[1.313rem] font-normal" : "text-[1.125rem] leading-[1.688rem] font-medium"}>

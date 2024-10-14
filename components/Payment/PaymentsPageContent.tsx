@@ -50,7 +50,7 @@ const PaymentsPageContent = () => {
             dispatch(fetchPayments({ page: currentPage, limit: pageData.limit, type: type }));
             dispatch(stripeBalance());
             dispatch(goollooperBalance());
-        }, 5000);
+        }, 2000);
 
         return () => clearInterval(intervalId);
     }, [dispatch, currentPage, pageData.limit, goollooperBalanceData, type]);
@@ -61,13 +61,8 @@ const PaymentsPageContent = () => {
         setCurrentPage(page);
     };
 
-    const withdrawGoollooper = async () => {
-        try {
-            await dispatch(withdrawGoollooperBalance(parseInt(goollooperBalanceData))).unwrap();
-            // console.log("Withdrawal successful");
-        } catch (error) {
-            console.error("Error withdrawing goollooper balance:", error);
-        }
+    const withdrawGoollooper = () => {
+        dispatch(withdrawGoollooperBalance(parseInt(goollooperBalanceData)));
     };
 
     const handleFilter = (value: string | number) => {

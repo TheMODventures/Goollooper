@@ -15,7 +15,9 @@ interface ConfirmationModalProps {
   amount?: number;
   isDelete?: boolean;
   taskID?: string;
-  onAccept?: (idOrAmount: any) => void;
+  index?: number;
+  isCategory?: boolean;
+  onAccept?: (idOrAmount: string | number, taskID?: string) => void;
 }
 
 export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
@@ -24,21 +26,25 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   amount,
   isDelete,
   taskID,
+  isCategory,
+  index,
   onAccept,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleAccept = () => {
     if (onAccept) {
-      if (isDelete && taskID) {
+      if (isDelete && taskID && !isCategory) {  
         onAccept(taskID); // Handle deletion
       } else if (!isAccept && amount) {
         onAccept(amount); // Handle withdrawal
       } else if (isAccept && userID) {
         onAccept(userID); // Handle acceptance
+      } else if (isCategory && index !== undefined && taskID) {
+        onAccept(index, taskID); // Handle deletion
       }
     }
-    setIsOpen(false); // Close modal after action
+    setIsOpen(false);
   };
 
   return (

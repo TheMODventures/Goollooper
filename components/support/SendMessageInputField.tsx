@@ -70,6 +70,14 @@ const SendMessageInputField: React.FC<SendMessageInputFieldProps> = ({
           className="bg-backGroundColor rounded-full flex-grow h-[1.875rem] mx-[0.75rem] pl-[1rem] py-[0.313rem] border text-[0.75rem] leading-[1.25rem]"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              handleSendMessage(imageFile, message);
+              setMessage("");
+              setImagePreview(null);
+              setImageFile(null);
+            }
+          }}
         />
         <Image
           src="/assets/Image/Send.svg"

@@ -331,7 +331,7 @@ const paymentSlice = createSlice({
         state.status = "loading";
       })
       .addCase(withdrawGoollooperBalance.fulfilled, (state) => {
-        state.goollooperBalance = 0;
+        state.goollooperBalance = 0.00;
       })
       .addCase(withdrawGoollooperBalance.rejected, (state, action) => {
         state.status = "failed";

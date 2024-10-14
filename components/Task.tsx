@@ -8,10 +8,12 @@ interface ServiceProps {
   id: string;
   link?: string;
   isIndustry?: boolean;
-  onDelete: (id: string) => void;
+  isCategory?: boolean;
+  parentIndex?: number;
+  onDelete: (idOrAmount: string | number, id?: string) => void;
 }
 
-const Task: React.FC<ServiceProps> = ({ title, id, link, isIndustry, onDelete }) => {
+const Task: React.FC<ServiceProps> = ({ title, id, link, isIndustry, isCategory, parentIndex, onDelete }) => {
 
   return (
     <div className="flex justify-between rounded-sm mt-[0.5em] h-[3.5em] bg-backGroundSecondaryColor items-center pl-[1.063em] pr-[0.25em]">
@@ -30,8 +32,8 @@ const Task: React.FC<ServiceProps> = ({ title, id, link, isIndustry, onDelete })
               />
             </Link>
           </Button>
-        }
-        <ConfirmationModal isDelete={true} taskID={id} onAccept={onDelete} />
+        } 
+        <ConfirmationModal isDelete={true} taskID={id} onAccept={onDelete} index={parentIndex} isCategory={isCategory ? true : false} />
       </div>
     </div>
   );

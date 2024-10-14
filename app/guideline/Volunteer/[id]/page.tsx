@@ -77,15 +77,22 @@ export default function VolunteerSubpage() {
   const handleAddSubCategoryClick = () => {
     if (service?.title) {
       if (serviceId === "add") {
-        serviceId = subServices[0]?.data?._id;
+        dispatch(
+          addSubService({
+            serviceId: subServices[0]?._id,
+            title: singleSubCategory,
+            type: "volunteer",
+          })
+        );
+      } else {
+        dispatch(
+          addSubService({
+            serviceId,
+            title: singleSubCategory,
+            type: "volunteer",
+          })
+        );
       }
-      dispatch(
-        addSubService({
-          serviceId,
-          title: singleSubCategory,
-          type: "volunteer",
-        })
-      );
       dispatch(handleAddSubCategory(singleSubCategory));
     } else {
       toast.error("Please add category first");
@@ -102,13 +109,20 @@ export default function VolunteerSubpage() {
 
 
   const handleRemoveSubCategoryClick = (value: string | undefined) => {
-    dispatch(removeService(String(value)));
-    const subCategory = service?.subCategories?.find(
-      (category: SubService) => category._id === value
-    )?.title;
-    // console.log(subCategory);
-    dispatch(handleRemoveSubCategory(subCategory));
+    if (serviceId !== "add") {
+      dispatch(removeService(String(value)));
+      const subCategory = service?.subCategories?.find(
+        (category: SubService) => category._id === value
+      )?.title;
+      dispatch(handleRemoveSubCategory(subCategory));
+    } else {
+      const id = subServices.find((category: SubService) => category.title === value)?._id;
+      console.log(id);
+      dispatch(removeService(String(id)));
+      dispatch(handleRemoveSubCategory(String(value)));
+    }
 
+    console.log(value);
   };
 
   const handleCurrentSubCategoryClick = (index: number) => {
@@ -122,7 +136,6 @@ export default function VolunteerSubpage() {
       if (serviceId === "add") {
         serviceId = subServices[0]?.data?._id;
       } else {
-        // changes the URL query parameter to reflect the updated category
         const newSearchParams = new URLSearchParams(searchParams.toString());
         newSearchParams.set("title", category);
         window.history.replaceState(null, "", `?${newSearchParams.toString()}`);
@@ -145,8 +158,7 @@ export default function VolunteerSubpage() {
     setCategory("");
   };
 
-  console.log(services);
-
+  console.log(service);
   return (
     <DashboardLayout>
       <GuidelineLayout>
@@ -194,13 +206,11 @@ export default function VolunteerSubpage() {
                 service.subCategories.map((item: SubService, index: number) => (
                   <Chips
                     key={item?.title}
-
                     id={item?._id ?? ""}
                     index={index}
                     text={item?.title}
                     isSubCategory={true}
-                    isDeleteId={true}
-
+                    isDeleteId={serviceId !== "add" ? true : false}
                     onSubCategoryClick={handleRemoveSubCategoryClick}
                     currentSelected={handleCurrentSubCategoryClick}
                   />

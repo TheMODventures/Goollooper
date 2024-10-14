@@ -38,7 +38,7 @@ export default function GuidelineLayout({ children }: { children: ReactNode }) {
     <>
       <div className="h-calc-screen flex flex-row mt-[0.563em] ml-[0.813em] gap-[0.813em] mb-2">
 
-        <div className="w-[25.188em] border border-border rounded-md bg-white px-[1.75em] py-[1.813em]">
+        <div className="fixed h-[86vh] mb-10 w-[25.188em] border border-border rounded-md bg-white px-[1.75em] py-[1.813em]">
           <div className="flex flex-col">
             <h1 className="font-bold text-[1.875rem] leading-[2.813rem]">Guidelines</h1>
             <p className="text-subTitleColor text-[0.875rem] leading-[1.313rem] mb-[1.7rem] mt-[0.5rem]">You can manage</p>
@@ -55,7 +55,7 @@ export default function GuidelineLayout({ children }: { children: ReactNode }) {
         </div>
 
         {/* Right Content */}
-        <div className="flex-1">
+        <div className="flex-1 ml-[26rem]">
             {children}
         </div>
 

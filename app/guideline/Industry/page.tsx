@@ -30,8 +30,8 @@ export default function IndustryPage() {
   }, [fetchData]);
 
   const handleDeleteCategory = useCallback(
-    (id: string) => {
-      dispatch(deleteIndustry(id));
+    (id: string | number) => {
+      dispatch(deleteIndustry(id as string));
       dispatch(removeIndustry(id));
     },
     [dispatch]

@@ -39,7 +39,7 @@ function DashboardPage() {
     <RoleGuard allowedRoles={[1, 4]}>
     <DashboardLayout Active={1}>
       <div className="flex flex-col gap-4">
-        <div className="pl-[1.75em] mx-2 mt-3 border border-border bg-white rounded-md">
+        <div className="pl-[1.75em] mx-2 border border-border bg-white rounded-md">
           <h1 className="font-semibold text-[1.875rem] leading-[2.813rem] mt-[2rem] ">Dashboard</h1>
           <p className="text-[0.875rem] leading-[1.313rem] text-subTitleColor mt-[0.5em]">
             You can see the statistics of Goollooper here

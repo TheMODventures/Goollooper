@@ -82,6 +82,8 @@ const NotificationPage = () => {
       if (notificationRes?.data?.status) {
         toast.success("Notificaion sent successfully");
         setLoading(false);
+        setTitle("");
+        setContent("");
       } else {
         toast.warning(notificationRes?.msg);
       }
@@ -136,7 +138,7 @@ const NotificationPage = () => {
             <h1 className="w-full px-[1.4rem] mt-[0.688em] text-[1.4rem] leading-[2.813rem] font-bold">Notification Content<span className="text-PrimaryColor"> *</span></h1>
             <div className="">
 
-              <textarea className="h-calc-editor-screen w-full px-[1.4rem] pt-2" placeholder="Please write your notification content" onChange={(e) => setContent(e.target.value)} />
+              <textarea className="h-calc-editor-screen w-full px-[1.4rem] pt-2" placeholder="Please write your notification content" value={content} onChange={(e) => setContent(e.target.value)} />
             </div>
 
             <div className="flex justify-end mt-2 pr-4 pb-4">

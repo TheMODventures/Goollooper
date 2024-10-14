@@ -11,6 +11,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Link from "next/link";
 import {
   fetchServices,
+  handleRemoveInterestServices,
   handleRemoveServices,
   removeService,
   selectServices,
@@ -42,15 +43,10 @@ export default function InterestPage() {
     setCurrentPage(page);
   };
 
-  const handleDeleteCategory = useCallback(
-    (id: string) => {
-      const serviceId = services.find((service: any) => service?._id === id)
-        ?.categories[0]._id;
-      dispatch(handleRemoveServices(id));
-      dispatch(removeService(serviceId));
-    },
-    [dispatch, services]
-  );
+  const handleDeleteCategory = (idOrAmount: string | number, id?: string) => {
+    dispatch(removeService(id as string));
+    dispatch(handleRemoveInterestServices({index: idOrAmount as number, id: id as string}));
+  };
 
   return (
     <DashboardLayout>
@@ -69,19 +65,19 @@ export default function InterestPage() {
           </div>
           <ScrollArea className="flex flex-col h-calc-interest-list-screen mt-[1.188em]">
             {services?.length
-
-              ? services?.map((service: any) => (
+              ? services?.map((service: any, index: number) =>
                   service?.categories?.map((category: any) => (
                     <Task
                       key={category._id}
                       title={category.category}
                       id={category._id}
                       link={`/guideline/Interest`}
-                      onDelete={handleDeleteCategory} 
+                      isCategory={true}
+                      parentIndex={index}
+                      onDelete={handleDeleteCategory}
                     />
                   ))
-
-                ))
+                )
               : null}
           </ScrollArea>
           <div className="p-4 ">
