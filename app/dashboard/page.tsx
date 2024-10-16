@@ -21,22 +21,15 @@ import PaymentTableSkeleton from '@/components/Skeletons/PaymentTableSkeleton';
 
 function DashboardPage() {
   const dispatch = useAppDispatch();
-  const { users, userCount, taskCount, pageData, currentPage, status } = useSelector((state: RootState) => state.payment);
+  const { users, userCount, taskCount, pageData, currentPage, loading } = useSelector((state: RootState) => state.payment);
   const isAuthenticated = useAuth('/');
-  console.log(status);
 
   const handlePageChange = (page: number) => {
     dispatch(setCurrentPage(page));
   };
 
   useEffect(() => {
-    const fetchDataWithDelay = () => {
-      setTimeout(() => {
-      dispatch(fetchUserData({ page: currentPage, limit: pageData?.limit }));
-      }, 100);
-    };
-
-    fetchDataWithDelay();
+    dispatch(fetchUserData({ page: currentPage, limit: pageData?.limit }));
   }, [dispatch, pageData?.limit, currentPage]);
 
   if (!isAuthenticated) {
@@ -81,7 +74,7 @@ function DashboardPage() {
             </p>
 
             <div className="flex flex-col items-stretch space-y-14 w-full">
-              {status === "loading" ?  (<PaymentTableSkeleton />): 
+              {loading ?  (<PaymentTableSkeleton />): 
                 (
                   <>
                     <Users users={users} isSubAdmin={false} isPayment={false} />
