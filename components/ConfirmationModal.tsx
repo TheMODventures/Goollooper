@@ -44,7 +44,6 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
         onAccept(index, taskID); // Handle deletion
       }
     }
-
     setIsOpen(false);
   };
 

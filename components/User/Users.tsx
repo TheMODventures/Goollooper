@@ -35,8 +35,7 @@ export function Users({ users, isSubAdmin, isPayment, isUser, handleSignal }: Us
     dispatch(updatePaymentStatus(idOrAmount as string));
     if (handleSignal) {
       handleSignal();
-    }
-  };  
+    } 
 
   return (
     <Table className="border-collapse"> 

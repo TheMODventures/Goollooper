@@ -69,7 +69,6 @@ const PaymentsPageContent = () => {
     const handleSignal = () => {
         setSingal(!signal);
     }
-
     const withdrawGoollooper = () => {
         dispatch(withdrawGoollooperBalance(parseInt(goollooperBalanceData)));
     };
