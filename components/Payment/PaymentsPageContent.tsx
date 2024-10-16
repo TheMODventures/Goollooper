@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import Image from "next/image";
 import PendingIcon from "@/public/assets/Image/pending.png";
 import CompletedIcon from "@/public/assets/Image/approved.png";
@@ -24,6 +24,8 @@ import { formatAmount } from "@/lib/utils";
 import Search from "../Searching/Search";
 import { Input } from "../ui/input";
 import CheckoutPage from "./ExpressCheckout";
+import { Skeleton } from "../ui/skeleton";
+import PaymentTableSkeleton from "../Skeletons/PaymentTableSkeleton";
 
 const PaymentsPageContent = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -32,8 +34,9 @@ const PaymentsPageContent = () => {
     const goollooperBalanceData = useSelector((state: RootState) => state.payment.goollooperBalance);
     const status = useSelector((state: RootState) => state.payment.status);
     const error = useSelector((state: RootState) => state.payment.error);
+    const loading = useSelector((state: RootState) => state.payment.loading);
+    const [signal, setSingal] = useState(false);
 
-    const [isLoading, setIsLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [type, setType] = useState<string>("");
     const [amount, setAmount] = useState<string>("");
@@ -46,14 +49,16 @@ const PaymentsPageContent = () => {
     });
 
     useEffect(() => {
-        const intervalId = setInterval(() => {
+        const fetchData = () => {
             dispatch(fetchPayments({ page: currentPage, limit: pageData.limit, type: type }));
             dispatch(stripeBalance());
             dispatch(goollooperBalance());
-        }, 2000);
+        };
 
-        return () => clearInterval(intervalId);
-    }, [dispatch, currentPage, pageData.limit, goollooperBalanceData, type]);
+        const timer = setTimeout(fetchData, 100);
+        setSingal(false);
+        return () => clearTimeout(timer);
+    }, [dispatch, currentPage, pageData.limit, goollooperBalanceData, type, signal]);
 
 
 
@@ -61,12 +66,19 @@ const PaymentsPageContent = () => {
         setCurrentPage(page);
     };
 
+    const handleSignal = () => {
+        setSingal(!signal);
+    }
+
     const withdrawGoollooper = () => {
         dispatch(withdrawGoollooperBalance(parseInt(goollooperBalanceData)));
     };
 
     const handleFilter = (value: string | number) => {
-        if (typeof value === "string") setType(value);
+        if (typeof value === "string") {
+            setCurrentPage(1);
+            setType(value)
+        };
     }
 
     const fetchPaymentIntent = async (value: number) => {
@@ -138,21 +150,23 @@ const PaymentsPageContent = () => {
                         <Input placeholder="Please enter an amount" value={amount} onChange={(e)=> {
                             setAmount(e.target.value);
                         }} />
-                        <CheckoutPage amount={Number(amount) ?? 0} resetAmount={resetAmount} handleClientSecret={fetchPaymentIntent} clientSecret={clientSecret} paymentIntentId={paymentIntentId} />
+                        <CheckoutPage amount={Number(amount) ?? 0} resetAmount={resetAmount} handleClientSecret={fetchPaymentIntent} clientSecret={clientSecret} paymentIntentId={paymentIntentId} handleSignal={handleSignal} />
                     </div>
                 </section>
 
-                <div className="pb-4">
-                    <Search isSubAdmin={false} isUser={false} users={payments?.result} onRoleFilterChange={handleFilter} />
-                    <Users users={payments?.result} isSubAdmin={false} isPayment={true} />
-                    <Pagination
-                        currentPage={currentPage}
-                        totalPages={payments?.pagination?.totalPages}
-                        totalItems={payments?.pagination?.totalItems}
-                        onPageChange={handlePageChange}
-                        limit={pageData.limit}
-                    />
-                </div>
+                {status === "loading" ? <PaymentTableSkeleton /> :
+                    <div className="pb-4">
+                        <Search isSubAdmin={false} isUser={false} users={payments?.result} onRoleFilterChange={handleFilter} />
+                        <Users users={payments?.result} isSubAdmin={false} isPayment={true} handleSignal={handleSignal} />
+                        <Pagination
+                            currentPage={currentPage}
+                            totalPages={payments?.pagination?.totalPages}
+                            totalItems={payments?.pagination?.totalItems}
+                            onPageChange={handlePageChange}
+                            limit={pageData.limit}
+                        />
+                    </div>
+                }
             </div>
         </DashboardLayout>
     );

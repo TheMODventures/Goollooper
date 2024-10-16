@@ -26,12 +26,16 @@ import { EllipsisVertical } from "lucide-react";
 import { SubAdminModal } from "./Modals/SubAdminModal";
 import { UserModal } from "./Modals/UserModal";
 import ImageAvatar from "../ImageAvatar";
+import { formatAmount } from "@/lib/utils";
 
-export function Users({ users, isSubAdmin, isPayment, isUser }: UsersProps) {
+export function Users({ users, isSubAdmin, isPayment, isUser, handleSignal }: UsersProps) {
 
   const dispatch = useDispatch<AppDispatch>();
   const handleWithdraw = async (idOrAmount: string | number) => {
-    dispatch(withdrawPayment(idOrAmount as number));
+    dispatch(updatePaymentStatus(idOrAmount as string));
+    if (handleSignal) {
+      handleSignal();
+    }
   };  
 
   return (
@@ -105,7 +109,7 @@ export function Users({ users, isSubAdmin, isPayment, isUser }: UsersProps) {
               </>
             ) : (
               <>
-                <TableCell>{`$${user?.amount}`}</TableCell>
+                <TableCell>{`$${formatAmount(user?.amount ?? 0)}`}</TableCell>
                 <TableCell>{user?.type}</TableCell>
               </>
             )}
@@ -132,11 +136,14 @@ export function Users({ users, isSubAdmin, isPayment, isUser }: UsersProps) {
             {isPayment ? (
               <TableCell>
                 {user.type === "Withdraw" ? (
+                  user.status === "pending" && (
                     <ConfirmationModal
-                    isAccept={true}
-                    // amount={user.gooollooperAmount}
-                    onAccept={handleWithdraw}
-                  />
+                      isAccept={true}
+                      userID={user._id}
+                      amount={user.amount}
+                      onAccept={handleWithdraw}
+                    />
+                  )
                 ) : null}
               </TableCell>
             ) : (

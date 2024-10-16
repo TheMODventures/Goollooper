@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import {
+  addSubService,
   editService,
   fetchService,
   removeService,
@@ -12,25 +13,32 @@ import { Button } from "../ui/button";
 import ServiceInput from "./ServiceInput";
 import { Chips } from "../Chips";
 import { toast } from "react-toastify";
+import { Skeleton } from "../ui/skeleton";
 
 const OptionalCatgories = ({
   id,
   level,
   title,
+  industry,
 }: {
   id: string;
   level: number;
   title: string;
-}) => {
+  industry: string;
+}) => {  
   const dispatch = useDispatch<AppDispatch>();
-  const [data, setData] = useState([]);
+  const [data, setData] = useState<any[]>([]);
   const [category, setCategory] = useState("");
   const [categoryIndex, setCategoryIndex] = useState(0);
 
   const fetchData = useCallback(async () => {
     try {
       const response = await dispatch(fetchService(id)).unwrap();
-      setData(response);
+      if (response.length > 0) {
+        setData(response);
+      } else {
+        setData([]);
+      }
     } catch (error) {
       console.error("Error fetching service:", error);
     }
@@ -50,40 +58,39 @@ const OptionalCatgories = ({
 
   const handleRemoveSubCategoryClick = (value: string) => {
     const service = data.find((item: any) => item.title === value) as any;
-    // console.log("Remove service:", service._id);
     dispatch(removeService(service._id));
     setData((prevData) => {
       const newData = [...prevData] as any;
       return newData.filter((item: any) => item.title !== value);
     });
+    setCategoryIndex(0);
     toast.success("Sub category removed successfully");
   };
 
-  const handleUpdateCategory = () => {
-    const service = data[categoryIndex] as any;
-    const body: any = {
-      title: category,
-    };
-    console.log("Update service:", service._id, body);
-    dispatch(editService({ id: service._id, service: body }));
+  const handleUpdateCategory = async () => {
+    const response = await dispatch(
+      addSubService({
+        serviceId: id,
+        title: category,
+        type: "interest",
+        industry: industry,
+      })
+    ).unwrap();
     setData((prevData) => {
-      const newData = [...prevData] as any;
-      newData[categoryIndex].title = category;
-      return newData;
+      return [...prevData, response.data];
     });
     setCategory("");
-    toast.success("Sub category updated successfully");
+    toast.success(`Sub category ${category} successfully`);
   };
 
-  if (data.length === 0) return null;
-  // console.log(`Level ${level}:`, data);
+  if (title === undefined) return null;
 
   return (
     <div>
       <div>
         <div className="mt-10 mb-2 flex justify-between">
           <h4 className="text-[1.5rem] leading-[0.938rem] font-normal">
-            Update sub category to
+            Add sub category to
             <span className="text-PrimaryColor ml-1">{` ${title}`}</span>
           </h4>
           <h4 className="text-[1.5rem] leading-[0.938rem] font-normal">
@@ -100,7 +107,7 @@ const OptionalCatgories = ({
             className="w-[10.625rem] h-[2.375rem] text-[0.875rem] leading-[1.25rem] font-medium bg-PrimaryColor rounded-full"
             onClick={handleUpdateCategory}
           >
-            Update sub catgory
+            Add sub catgory
           </Button>
         </div>
         <div className="w-full flex flex-wrap gap-5 mt-6">
@@ -118,18 +125,24 @@ const OptionalCatgories = ({
           ))}
         </div>
       </div>
-      {data.map(
+      {/* {data.map(
         (item: any, index: number) =>
-          item.hasSubCategory &&
-          item._id === (data[categoryIndex] as any)?._id && (
-            <OptionalCatgories
-              key={item._id}
-              id={item._id}
-              level={level + 1}
-              title={item.title}
-            />
+          ((item.hasSubCategory &&
+            item._id === data[categoryIndex]?._id) ||
+            index === 0) && (
+            
           )
-      )}
+      )} */}
+
+      {data.length > 0 && level < 4 ? (
+        <OptionalCatgories
+          key={data[categoryIndex]?._id}
+          id={data[categoryIndex]?._id}
+          level={level + 1}
+          title={data[categoryIndex]?.title}
+          industry={industry}
+        />
+      ) : null}
     </div>
   );
 };

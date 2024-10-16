@@ -63,6 +63,7 @@ export const MessageScreen = ({
 
     const handleImageClick = (mediaUrl: string) => {
       setPreviewImage(IMAGE_URL + mediaUrl);
+      console.log(IMAGE_URL + mediaUrl);
     };
   
     const closePreview = () => {

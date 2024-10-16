@@ -179,15 +179,33 @@ export const addSubService = createAsyncThunk(
       serviceId,
       title,
       type,
-    }: { serviceId: string | null; title: string; type: string },
+      industry,
+    }: {
+      serviceId: string | null;
+      title: string;
+      type: string;
+      industry?: string;
+    },
     { rejectWithValue }: { rejectWithValue: (value: any) => void }
   ) => {
     try {
-      const body = {
-        title: title,
-        type: type,
-        parent: serviceId,
-      };
+      let body = {};
+      if (industry) {
+        body = {
+          title: title,
+          type: type,
+          parent: serviceId,
+          industry: industry,
+        };
+      } else {
+        body = {
+          title: title,
+          type: type,
+          parent: serviceId,
+        };
+      }
+
+      console.log(body)
       const response = await addService(body);
       return response.data;
     } catch (error: any) {
@@ -261,8 +279,10 @@ const serviceSlice = createSlice({
         industry: action.payload,
       };
     },
-    handleAddSubCategory: (state, action: PayloadAction<string>) => {
-      const newSubCategory = action.payload;
+    handleAddSubCategory: (state, action: PayloadAction<{ name: string; id?: string; industry?: string }>) => {
+      const newSubCategory = action.payload.name;
+      const id = action.payload.id;
+      const industry = action.payload.industry;
       const existingSubCategory = state.service.subCategories.find(
         (subCategory) =>
           subCategory.title.toLowerCase() === newSubCategory.toLowerCase()
@@ -272,6 +292,17 @@ const serviceSlice = createSlice({
         toast.warning("This sub-category already exists.");
       } else if (!newSubCategory) {
         toast.warning("Please enter a sub-category");
+      } else if (id) {
+        state.service.subCategories.push({
+          _id: id,
+          title: newSubCategory,
+          keyWords: [],
+          industry: industry as string,
+          subCategories: [],
+          type: state.service.type,
+        });
+        state.singleSubCategory = "";
+        toast.success(`Sub-category ${newSubCategory} added successfully`);
       } else {
         state.service.subCategories.push({
           title: newSubCategory,
@@ -398,7 +429,7 @@ const serviceSlice = createSlice({
         return;
       }
       if (!state.service.subCategories[subCategoryIndex]) {
-        toast.warning("Please add a sub-category first");
+        toast.warning("Please add or select a sub-category first");
         return;
       }
 
@@ -470,8 +501,9 @@ const serviceSlice = createSlice({
         state.services[action.payload.index].categories = state.services[
           action.payload.index
         ].categories?.filter(
-        (service: any) => service?._id !== action.payload.id
-      )}
+          (service: any) => service?._id !== action.payload.id
+        );
+      }
     },
     updateKeywordTitle: (
       state,

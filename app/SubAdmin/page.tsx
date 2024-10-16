@@ -17,8 +17,9 @@ const SubadminPage = () => {
   const dispatch = useAppDispatch();
   const { subadmins, pageData } = useSelector((state: RootState) => state.payment);
   const isAuthenticated = useAuth('/');
-  const [currentPage, setCurrentPage] = React.useState(1);
-  const [search, setSearch] = React.useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [search, setSearch] = useState("");
+  const [roleFilter, setRoleFilter] = useState(4);
 
   useEffect(() => {
     try {
@@ -41,6 +42,10 @@ const SubadminPage = () => {
     return null;
   }
 
+  const handleRoleFilterChange = (role: number | string) => {
+    if (typeof role === "number") setRoleFilter(role);
+  };
+
   return (
     <RoleGuard allowedRoles={[1, 4]}>
     <DashboardLayout Active={3}>
@@ -52,7 +57,7 @@ const SubadminPage = () => {
           <p className="text-subTitleColor mt-5">
             You can see the overall Sub Admins of Goollooper here
           </p>
-          <Search isSubAdmin={true} isUser={false} value={search} onChange={handleSearchChange} users={subadmins} />
+          <Search isSubAdmin={true} isUser={false} value={search} onChange={handleSearchChange} onRoleFilterChange={handleRoleFilterChange} users={subadmins} />
 
           <div className="flex flex-col items-stretch space-y-14 flex-grow overflow-auto">
             {/* Adding overflow-auto to handle the content overflow */}

@@ -328,13 +328,14 @@ const paymentSlice = createSlice({
         state.error = action.payload as string;
       })
       .addCase(withdrawGoollooperBalance.pending, (state) => {
-        state.status = "loading";
+        state.loading = true;
       })
       .addCase(withdrawGoollooperBalance.fulfilled, (state) => {
+        state.loading = false;
         state.goollooperBalance = 0.00;
       })
       .addCase(withdrawGoollooperBalance.rejected, (state, action) => {
-        state.status = "failed";
+        state.loading = false;
         state.error = action.payload as string;
       });
   },
