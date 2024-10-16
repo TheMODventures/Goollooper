@@ -52,6 +52,7 @@ import {
   removeService,
   updateKeywordTitle,
   handleRemoveNestedSubCategory,
+  addSubService,
 } from "@/store/Slices/ServiceSlice";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import CopyToModal from "@/components/services/CopyToModal";
@@ -124,28 +125,30 @@ export default function InterestSubpage() {
   };
 
   const handleCategoryChange = (value: string) => {
-    dispatch(handleCategory(value));
+    if (!service?.industry){
+      return toast.warning("Please select an industry group");
+    } else {
+      dispatch(handleCategory(value));
+    }
   };
 
   const handleSingleSubCategoryChange = (value: string) => {
     dispatch(handleSingleSubCategory(value));
   };
 
-  const handleAddSubCategoryClick = () => {
-
+  const handleAddSubCategoryClick = async () => {
     if (serviceId === "add") {
-      dispatch(handleAddSubCategory(singleSubCategory));
-    } else if (singleSubCategory) {
-      const id = service?.subCategories[subCategoryIndex]?._id ?? null;
-      const parent = service?.subCategories[subCategoryIndex]?.parent ?? null;
-      const type = service?.subCategories[subCategoryIndex]?.type ?? null;
+      if (!service.title) return toast.warning("Please input a category first");
+      dispatch(handleAddSubCategory({name: singleSubCategory}));
 
-      dispatch(
-        updateSubService({ id, parent, type, title: singleSubCategory })
-      );
-      dispatch(handleUpdateSubCategory(singleSubCategory));
+    } else if (singleSubCategory) {
+      const industryId = service.subCategories[subCategoryIndex].industry;
+      const response = await dispatch(
+        addSubService({ serviceId: serviceId, title: singleSubCategory, type: "interest", industry: industryId })
+      ).unwrap();
+      const id = response?.data?._id
+      dispatch(handleAddSubCategory({name: singleSubCategory, id: id, industry: industryId}));
       dispatch(handleSingleSubCategory(""));
-      toast.success("Sub category updated successfully");
     } else {
       toast.warning("Please input a value for sub category");
     }
@@ -179,16 +182,13 @@ export default function InterestSubpage() {
   };
 
   const handleAddKeywordClick = () => {
-
-    if (serviceId == "add") {
-      dispatch(handleAddKeyword({ subCategoryIndex, value: singleKeyword }));
-    } else {
-      const id = service?.subCategories[subCategoryIndex]._id;
-      dispatch(updateKeywordTitle({ index: keywordIndex, value: singleKeyword }));
-      const filterKeyword = service?.subCategories[subCategoryIndex].keyWords.filter((keyword: string) => keyword !== service?.subCategories[subCategoryIndex].keyWords[keywordIndex]);
-      filterKeyword.push(singleKeyword);
+    dispatch(handleAddKeyword({ subCategoryIndex, value: singleKeyword }));
+    
+    if (serviceId !== "add" && service?.subCategories[subCategoryIndex] !== undefined) { 
+      const keywords = [...(service?.subCategories[subCategoryIndex]?.keyWords || []), singleKeyword];
+      const id = service?.subCategories[subCategoryIndex]?._id;
       const body = {
-        keyWords: filterKeyword,
+        keyWords: keywords,
       };
       dispatch(editService({ id: id, service: body }));
     }
@@ -360,6 +360,7 @@ export default function InterestSubpage() {
                 <ServiceInput
                   title="Category"
                   onChange={handleCategoryChange}
+                  isDisabled={!service?.industry}
                 />
               </div>
             ) : (
@@ -386,7 +387,7 @@ export default function InterestSubpage() {
                 className="h-[2.375rem] text-[0.875rem] leading-[1.25rem] font-medium bg-PrimaryColor rounded-full"
                 onClick={handleAddSubCategoryClick}
               >
-                {serviceId === "add" ? "Add SubCategory" : "Update SubCategory"}
+                Add SubCategory
               </Button>
             </div>
 
@@ -438,8 +439,10 @@ export default function InterestSubpage() {
 
                 <ServiceInput
                   title="Keyword"
+                  isKeyword={true}
                   value={singleKeyword}
                   onChange={handleSingleKeywordChange}
+                  onEnter={handleAddKeywordClick}
                 />
                 <div
                   className={`flex items-center ${
@@ -461,7 +464,7 @@ export default function InterestSubpage() {
                     className="w-[10.625rem] h-[2.375rem] text-[0.875rem] leading-[1.25rem] font-medium bg-PrimaryColor rounded-full"
                     onClick={handleAddKeywordClick}
                   >
-                    {serviceId === "add" ? "Add Keyword" : "Update Keyword"}
+                    Add Keyword
                   </Button>
                 </div>
                 <div className="flex flex-wrap gap-5 mt-6">
@@ -474,7 +477,7 @@ export default function InterestSubpage() {
                         text={keyword}
                         selected={keywordIndex}
                         currentSelected={handleKeyworSelect}
-                        isSubCategory={serviceId === "add" ? false : true}
+                        isSubCategory={false}
                         onKeywordClick={(index, name) => 
                             handleRemoveKeywordClick(index, name)
                         }
@@ -560,12 +563,14 @@ export default function InterestSubpage() {
                     </div>
                     )
                   })
-                ) : (
-                  service?.subCategories?.[subCategoryIndex]?.hasSubCategory ? 
-                  <OptionalCatgories id={service?.subCategories[subCategoryIndex]?._id} level={1} title={service?.subCategories[subCategoryIndex]?.title} /> 
-                  : <h1 className="pt-3 pb-3.5">No nested level subcategories</h1>
+                ) : ( 
+                  <OptionalCatgories 
+                    id={service?.subCategories[subCategoryIndex]?._id} 
+                    level={1} 
+                    title={service?.subCategories[subCategoryIndex]?.title} 
+                    industry={service?.subCategories[subCategoryIndex]?.industry} 
+                  /> 
                 )}
-                
 
               </TabsContent>
             </Tabs>

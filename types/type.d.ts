@@ -36,6 +36,7 @@ export interface UsersProps {
   isSubAdmin?: boolean;
   isPayment?: boolean;
   isUser?: boolean;
+  handleSignal?: () => void;
 }
 
 enum UserLocationType {

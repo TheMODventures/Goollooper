@@ -93,7 +93,7 @@ export default function VolunteerSubpage() {
           })
         );
       }
-      dispatch(handleAddSubCategory(singleSubCategory));
+      dispatch(handleAddSubCategory({name: singleSubCategory}));
     } else {
       toast.error("Please add category first");
     }

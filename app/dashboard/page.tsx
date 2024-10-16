@@ -16,11 +16,12 @@ import { useAppDispatch } from '@/lib/hooks';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store/reducers/rootReducer';
 import { fetchUserData, setCurrentPage } from "@/store/Slices/PaymentSlice";
+import PaymentTableSkeleton from '@/components/Skeletons/PaymentTableSkeleton';
 
 
 function DashboardPage() {
   const dispatch = useAppDispatch();
-  const { users, userCount, taskCount, pageData, currentPage } = useSelector((state: RootState) => state.payment);
+  const { users, userCount, taskCount, pageData, currentPage, loading } = useSelector((state: RootState) => state.payment);
   const isAuthenticated = useAuth('/');
 
   const handlePageChange = (page: number) => {
@@ -28,8 +29,8 @@ function DashboardPage() {
   };
 
   useEffect(() => {
-    dispatch(fetchUserData({ page: currentPage, limit: pageData?.limit}));
-  }, [dispatch, pageData, currentPage]);
+    dispatch(fetchUserData({ page: currentPage, limit: pageData?.limit }));
+  }, [dispatch, pageData?.limit, currentPage]);
 
   if (!isAuthenticated) {
     return null;
@@ -73,18 +74,20 @@ function DashboardPage() {
             </p>
 
             <div className="flex flex-col items-stretch space-y-14 w-full">
-              {users?.length ? (
-                <>
-                  <Users users={users} isSubAdmin={false} isPayment={false} />
-                  <Pagination
-                    currentPage={currentPage}
-                    totalPages={pageData?.totalPages}
-                    totalItems={pageData?.totalItems}
-                    onPageChange={handlePageChange}
-                    limit={pageData?.limit}
-                  />
-                </>
-              ) : null}
+              {loading ?  (<PaymentTableSkeleton />): 
+                (
+                  <>
+                    <Users users={users} isSubAdmin={false} isPayment={false} />
+                    <Pagination
+                      currentPage={currentPage}
+                      totalPages={pageData?.totalPages}
+                      totalItems={pageData?.totalItems}
+                      onPageChange={handlePageChange}
+                      limit={pageData?.limit}
+                    />
+                  </>
+                )
+              }
             </div>
           </div>
         </div>

@@ -157,17 +157,20 @@ const CheckoutPage = ({
   paymentIntentId,
   handleClientSecret,
   resetAmount,
+  handleSignal,
 }: {
   amount: number;
   clientSecret: string;
   paymentIntentId: string;
   handleClientSecret: (value: number) => void;
   resetAmount: () => void;
+  handleSignal: () => void;
 }) => {
   const [success, setSucess] = useState<boolean>(false);
 
   const handleSucess = (value: boolean) => {
     setSucess(value);
+    handleSignal();
   };
 
   const options = {

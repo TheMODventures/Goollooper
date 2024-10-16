@@ -18,6 +18,10 @@ interface SearchProps {
 
 export default function Search({ isSubAdmin, isUser, value, onChange, onRoleFilterChange, roleFilter, users }: SearchProps) {
   const subAdminFilterLabelData = [
+    { label: "Sub Admins", value: 4 },
+    { label: "Support", value: 5 }
+  ];
+  const userFilterLabelData = [
     { label: "User", value: 2 },
     { label: "Service Provider", value: 3 }
   ];
@@ -35,6 +39,7 @@ export default function Search({ isSubAdmin, isUser, value, onChange, onRoleFilt
   const handleRoleFilterChange = (role: number | null) => {
     if (onRoleFilterChange && role !== null && (isSubAdmin || isUser)) {
       onRoleFilterChange(role);
+      console.log(role);
     } else {
       const type = paymentFilterLabelData.find((item: any) => item.value === role);
       if (onRoleFilterChange) {
@@ -51,7 +56,7 @@ export default function Search({ isSubAdmin, isUser, value, onChange, onRoleFilt
     <div className="flex justify-between items-center">
       <div className="flex justify-start gap-3 mt-5 mb-3">
         <Filter 
-          options={isSubAdmin || isUser ? subAdminFilterLabelData : paymentFilterLabelData}
+          options={ isUser ? userFilterLabelData : isSubAdmin ? subAdminFilterLabelData : paymentFilterLabelData}
           value={roleFilter ?? null}
           onChange={handleRoleFilterChange}
         />
