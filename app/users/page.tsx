@@ -16,7 +16,7 @@ import { fetchUserData } from "@/store/Slices/PaymentSlice";
 const UsersPage = () => {
   const dispatch = useAppDispatch();
   const { users, pageData } = useSelector((state: RootState) => state.payment);
-  const isAuthenticated = useAuth('/');
+  const isAuthenticated = useAuth("/");
   const [currentPage, setCurrentPage] = useState(1);
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState(2);

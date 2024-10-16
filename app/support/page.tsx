@@ -40,6 +40,8 @@ const SupportPage = () => {
     };
   }, [accessToken, user?._id, refresh]);
 
+  console.log(accessToken, user?._id, refresh);
+
   useEffect(() => {
     if (!chatData) return;
     // console.log("-------1");
@@ -76,7 +78,7 @@ const SupportPage = () => {
 
   const onUserClick = useCallback((chatDataObj: Chat | null) => {
     if (!chatDataObj) return;
-    // console.log({ chatDataObj });
+    console.log({ chatDataObj });
 
     const reqData = {
       userId: user?._id,
@@ -158,7 +160,7 @@ const SupportPage = () => {
   if (!isAuthenticated) {
     return null;
   };
-
+  // console.log({ chats, chatData, messages });
   return (
     <RoleGuard allowedRoles={[1, 4, 5]}>
       <DashboardLayout Active={4}>

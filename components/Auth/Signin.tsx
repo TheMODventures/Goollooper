@@ -37,12 +37,11 @@ function Signin() {
     try {
       setLoading(true);
       let loginRes: any = await onLogin(data);
+      console.log(loginRes);
       if (loginRes?.data?.code === 200) {
-        if (userRole === 5) router.push("/support");
-        else router.push("/dashboard");
         dispatch(setUser(loginRes?.data));
-        toast.success(loginRes?.msg);
         setLoading(false);
+        toast.success(loginRes?.data?.msg);
       } else {
         toast.warning(loginRes?.msg);
       }
@@ -50,6 +49,12 @@ function Signin() {
       setLoading(false);
       toast.error(error?.response?.data?.data);
     }
+  };
+  if (userRole === 1 || userRole === 4) { 
+    router.push("/dashboard"); 
+  }
+  if (userRole === 5) {
+    router.push("/dashboard");
   };
 
   const emailValue = watch("email");

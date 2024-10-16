@@ -20,6 +20,7 @@ import PaymentTableSkeleton from '@/components/Skeletons/PaymentTableSkeleton';
 
 
 function DashboardPage() {
+  const userRole = useSelector((state: RootState) => state.user.user?.role);
   const dispatch = useAppDispatch();
   const { users, userCount, taskCount, pageData, currentPage, loading } = useSelector((state: RootState) => state.payment);
   const isAuthenticated = useAuth('/');
@@ -29,8 +30,10 @@ function DashboardPage() {
   };
 
   useEffect(() => {
-    dispatch(fetchUserData({ page: currentPage, limit: pageData?.limit }));
-  }, [dispatch, pageData?.limit, currentPage]);
+    if (userRole !== 5) {
+      dispatch(fetchUserData({ page: currentPage, limit: pageData?.limit }));
+    }
+  }, [dispatch, pageData?.limit, currentPage, userRole]);
 
   if (!isAuthenticated) {
     return null;
