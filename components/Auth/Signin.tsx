@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 import { Button } from "@/components/ui/button";
@@ -23,15 +23,41 @@ import { useSelector } from "react-redux";
 function Signin() {
   const router = useRouter();
   const dispatch = useAppDispatch();
+  const [loading, setLoading] = useState<boolean>(false);
+  const [rememberMe, setRememberMe] = useState(false);
+  const userRole = useSelector((state: RootState) => state.user.user?.role);
+
   const {
     register,
     handleSubmit,
+    formState: { errors, isValid, isDirty },
     watch,
-    formState: { errors, isSubmitting },
-  } = useForm<SigninFields>({ resolver: zodResolver(SignInSchema), mode: "onChange" });
-  const [loading, setLoading] = useState<boolean>(false);
+    setValue,
+    trigger,
+  } = useForm<SigninFields>({ 
+    resolver: zodResolver(SignInSchema), 
+    mode: "onChange",
+  });
 
-  const userRole = useSelector((state: RootState) => state.user.user?.role);
+  const emailValue = watch("email");
+  const passwordValue = watch("password");
+
+  useEffect(() => {
+    const savedEmail = localStorage.getItem('email');
+    const savedPassword = localStorage.getItem('password');
+    if (savedEmail && savedPassword) {
+      setValue("email", savedEmail);
+      setValue("password", savedPassword);
+      setRememberMe(true);
+      
+      // Trigger validation after setting values
+      trigger(["email", "password"]);
+    }
+  }, [setValue, trigger]);
+
+  const handleCheckboxChange = (checked: boolean) => {
+    setRememberMe(checked);
+  };
 
   const onSubmit: SubmitHandler<SigninFields> = async (data: SiginFields) => {
     try {
@@ -49,7 +75,16 @@ function Signin() {
       setLoading(false);
       toast.error(error?.response?.data?.data);
     }
+
+    if (rememberMe) {
+      localStorage.setItem('email', data.email);
+      localStorage.setItem('password', data.password);
+    } else {
+      localStorage.removeItem('email');
+      localStorage.removeItem('password');
+    }
   };
+
   if (userRole === 1 || userRole === 4) { 
     router.push("/dashboard"); 
   }
@@ -57,8 +92,8 @@ function Signin() {
     router.push("/dashboard");
   };
 
-  const emailValue = watch("email");
-  const passwordValue = watch("password");
+  console.log("Form State:", { isValid, isDirty, emailValue, passwordValue, errors });
+  const isFormValid = isValid && emailValue && passwordValue;
 
   return (
     <>
@@ -73,11 +108,11 @@ function Signin() {
               type="email"
               placeholder="@mail.com"
               className={`rounded-lg bg-backGroundColor text-[0.875rem] leading-[1.313rem] pt-[2.188em] pl-[1.313em] text-black h-[4.125em] focus-visible:outline-none focus-visible:ring-0 ${
-                errors.email && emailValue ? 'border-red-500' : ''
+                errors.email ? 'border-red-500' : ''
               }`}
             />
-            <div className="absolute ">
-              {errors.email?.message && emailValue && (
+            <div className="absolute">
+              {errors.email?.message && (
                 <Tooltip message={errors.email?.message as string} />
               )}
             </div>
@@ -93,11 +128,11 @@ function Signin() {
               type="password"
               placeholder="********"
               className={`rounded-lg bg-backGroundColor text-[0.875rem] leading-[1.313rem] pt-[2.188em] pl-[1.313em] text-black h-[4.125em] focus-visible:outline-none focus-visible:ring-0 ${
-                errors.password && passwordValue ? 'border-red-500' : ''
+                errors.password ? 'border-red-500' : ''
               }`}
             />
             <div className="absolute">
-              {errors.password?.message && passwordValue && (
+              {errors.password?.message && (
                 <Tooltip message={errors.password?.message as string} />
               )}
             </div>
@@ -105,7 +140,12 @@ function Signin() {
         </div>
         <div className="flex justify-between mt-[0.875em] mb-[1.813em]">
           <div className="flex items-center space-x-2">
-            <Checkbox id="login-checkbox" className="w-[1.063em] h-[1.063em] rounded-md border-border data-[state=checked]:bg-PrimaryColor" />
+            <Checkbox
+              id="login-checkbox"
+              className="w-[1.063em] h-[1.063em] rounded-md border-border data-[state=checked]:bg-PrimaryColor"
+              checked={rememberMe}
+              onCheckedChange={handleCheckboxChange}
+            />
             <label htmlFor="login-checkbox" className="text-[0.875rem] leading-[1.313rem]">
               Remember me
             </label>
@@ -120,9 +160,9 @@ function Signin() {
         <Button
           className={`w-full h-[4.125rem] text-[1.125rem] mb-[1.875rem] rounded-full bg-SecondaryColor`}
           type="submit"
-          disabled={!(emailValue && passwordValue && !errors.email && !errors.password)}
+          disabled={!isFormValid}
         >
-          {isSubmitting ? 'Logging in...' : 'Login'}
+          {loading ? 'Logging in...' : 'Login'}
         </Button>
       </form>
     </>

@@ -21,6 +21,7 @@ const SupportPage = () => {
   const [chats, setChats] = useState<Chat[]>([]);
   const [messages, setMessages] = useState<any>([]);
   const [chatData, setChatData] = useState<Chat | null | any>(null);
+  const [activeTab, setActiveTab] = useState<number>(0);
   const [refresh, setRefresh] = useState(false);
 
   useEffect(() => {
@@ -40,7 +41,7 @@ const SupportPage = () => {
     };
   }, [accessToken, user?._id, refresh]);
 
-  console.log(accessToken, user?._id, refresh);
+  // console.log(accessToken, user?._id, refresh);
 
   useEffect(() => {
     if (!chatData) return;
@@ -76,13 +77,13 @@ const SupportPage = () => {
     };
   }, [chatData, user?._id]);
 
-  const onUserClick = useCallback((chatDataObj: Chat | null) => {
+  const onUserClick = useCallback((chatDataObj: Chat | string | null) => {
     if (!chatDataObj) return;
     console.log({ chatDataObj });
 
     const reqData = {
       userId: user?._id,
-      chatId: chatDataObj._id,
+      chatId: (chatDataObj as Chat)?._id,
       page: 1,
     };
     setChatData(chatDataObj);
@@ -151,25 +152,29 @@ const SupportPage = () => {
     try {
       socketServices.emit("closeChatSupportTicket", { chatId: chatId, userId: userId });
     } catch (error: any) {
-      // console.log("Mark as complete error", error);
       console.error("Mark as complete error", error);
     }
     setRefresh(prev => !prev);
   }, []);
+
+  const handleActiveTab = (tab: number) => {
+    setActiveTab(tab);
+  }
     
   if (!isAuthenticated) {
     return null;
   };
+
   // console.log({ chats, chatData, messages });
   return (
     <RoleGuard allowedRoles={[1, 4, 5]}>
       <DashboardLayout Active={4}>
         <div className="h-calc-screen flex flex-row m-2 border border-border bg-white rounded">
           {/* Left Side: User List and Search */}
-          <ChatList chats={chats} user={user} onClick={onUserClick} />
+          <ChatList chats={chats} user={user} onClick={onUserClick} handleActiveTab={handleActiveTab} />
 
           {/* Right Side: Chat Screen */}
-          <ChatDetails chatData={chatData} messages={messages} user={user} handleSendMessage={handleSendMessage} handleMarkAsComplete={handleMarkAsComplete} />
+          <ChatDetails isTask={true} activeTab={activeTab} chatData={chatData} messages={messages} user={user} handleSendMessage={handleSendMessage} handleMarkAsComplete={handleMarkAsComplete} />
         </div>
       </DashboardLayout>
     </RoleGuard>

@@ -99,6 +99,18 @@ export const sendMedia = async (media: any) => {
   });
 };
 
+export const getTasks = function () {
+  return Api.get('/admin/user/flag-task');
+};
+
+export const deleteTask = function (id: string) {
+  return Api.delete(`/task/delete/${id}`);
+};
+
+export const banUser = function (id: string) {
+  return Api.post(`/admin/user/block/${id}`);
+};
+
 export const getServices = function (
   page: number = 1,
   limit: number = 10,

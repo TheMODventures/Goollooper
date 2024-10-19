@@ -15,6 +15,7 @@ interface ConfirmationModalProps {
   amount?: number;
   isDelete?: boolean;
   taskID?: string;
+  isBlock?: boolean;
   index?: number;
   isCategory?: boolean;
   onAccept?: (idOrAmount: string | number, taskID?: string) => void;
@@ -26,6 +27,7 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   amount,
   isDelete,
   taskID,
+  isBlock,
   isCategory,
   index,
   onAccept,
@@ -42,6 +44,8 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
         onAccept(userID); // Handle acceptance
       } else if (isCategory && index !== undefined && taskID) {
         onAccept(index, taskID); // Handle deletion
+      } else if (isBlock && userID) {
+        onAccept(userID); // Handle blocking
       }
     }
     setIsOpen(false);
@@ -61,10 +65,10 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
           </Button>
         ) : (
           <Button
-            className="text-white rounded-full bg-PrimaryColor"
+            className="w-full text-white rounded-full bg-PrimaryColor"
             onClick={() => setIsOpen(true)}
           >
-            {!isAccept ? "Withdraw" : "Accept"}
+            {isAccept ? "Accept" : isBlock ? "Ban" : "Withdraw"}
           </Button>
         )}
       </DialogTrigger>
@@ -78,9 +82,12 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
           <DialogDescription className="text-[1.125rem] leading-[1.688rem] font-medium text-black text-center">
             {isDelete
               ? "Are you sure you want to delete this category?"
-              : !isAccept
-              ? "Are you sure you want to withdraw?"
-              : "Are you sure you want to accept this request?"}
+              : isAccept 
+              ? "Are you sure you want to accept this request?"
+              : isBlock 
+              ? "Are you sure you want to ban this user?"
+              : "Are you sure you want to withdraw?"
+            }
           </DialogDescription>
         </div>
         <div className="flex flex-col gap-1 justify-center items-center">
@@ -90,7 +97,7 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
             } text-white rounded-full`}
             onClick={handleAccept}
           >
-            {isDelete ? "Delete" : !isAccept ? "Withdraw" : "Accept"}
+            {isDelete ? "Delete" : isAccept ? "Accept" : isBlock ? "Ban" : "Withdraw"}
           </Button>
           <Button
             variant="ghost"

@@ -10,6 +10,7 @@ import { AppDispatch } from "@/store/store";
 import { useDispatch, useSelector } from "react-redux";
 import Link from "next/link";
 import {
+  fetchService,
   fetchServices,
   handleRemoveInterestServices,
   handleRemoveServices,
@@ -48,6 +49,17 @@ export default function InterestPage() {
     dispatch(handleRemoveInterestServices({index: idOrAmount as number, id: id as string}));
   };
 
+  const fetchIndustryId = async (id: string) => {
+    try {
+      const industry = await dispatch(fetchService(id)).unwrap();
+      console.log(industry[0].industry);
+    } catch (error) {
+      console.error("Failed to fetch industry:", error);
+    }
+  }
+
+  // console.log(services);
+
   return (
     <DashboardLayout>
       <GuidelineLayout>
@@ -66,8 +78,10 @@ export default function InterestPage() {
           <ScrollArea className="flex flex-col h-calc-interest-list-screen mt-[1.188em]">
             {services?.length
               ? services?.map((service: any, index: number) =>
-                  service?.categories?.map((category: any) => (
-                    <Task
+                  service?.categories?.map((category: any) => {
+                    // fetchIndustryId(category._id);
+                    
+                    return (<Task
                       key={category._id}
                       title={category.category}
                       id={category._id}
@@ -75,8 +89,10 @@ export default function InterestPage() {
                       isCategory={true}
                       parentIndex={index}
                       onDelete={handleDeleteCategory}
+                      industryId={service.industry}
                     />
-                  ))
+                    )
+                  })
                 )
               : null}
           </ScrollArea>

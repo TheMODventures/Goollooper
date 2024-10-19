@@ -2,17 +2,23 @@ import { Chat, User } from "@/types/type";
 import { UserAvatar } from "./UserAvatar";
 
 export const UserList = ({
-    chats,
-    user,
-    onClick,
-  }: {
-    chats: Chat[];
-    user: User;
-    onClick: (chatData: Chat | null) => void;
-  }) => {
-    return (
-      <div>
-        {chats?.map((msg: any) => (
+  chats,
+  tasks,
+  user,
+  isTask,
+  onClick,
+}: {
+  chats?: any;
+  tasks?: any;
+  user?: User;
+  isTask?: boolean;
+  onClick: (chatData: Chat | string | null) => void;
+}) => {
+  // console.log(tasks && "working task");
+  return (
+    <div>
+      {chats &&
+        chats?.map((msg: any) => (
           <UserAvatar
             key={msg._id}
             text={msg?.lastMessage?.body}
@@ -20,8 +26,20 @@ export const UserList = ({
             chatId={msg?._id}
             onUserClick={onClick}
             isList={true}
+            isMark={false}
           />
         ))}
-      </div>
-    );
-  };
+      {tasks &&
+        tasks.map((task: any) => (
+          <UserAvatar
+            key={task._id}
+            text={task.title}
+            chatData={task}
+            chatId={task._id}
+            isTask={true}
+            onUserClick={onClick}
+          />
+        ))}
+    </div>
+  );
+};
