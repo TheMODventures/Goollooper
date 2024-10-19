@@ -18,9 +18,9 @@ import {
 } from "@/components/ui/dialog";
 import { IMAGE_URL } from "@/lib/constants";
 
-import { updatePaymentStatus,withdrawPayment } from "@/store/Slices/PaymentSlice";
-import { AppDispatch } from "@/store/store";
-import { useDispatch } from "react-redux";
+import { updatePaymentStatus } from "@/store/Slices/PaymentSlice";
+import { AppDispatch, RootState } from "@/store/store";
+import { useDispatch, useSelector } from "react-redux";
 import { ConfirmationModal } from "../ConfirmationModal";
 import { EllipsisVertical } from "lucide-react";
 import { SubAdminModal } from "./Modals/SubAdminModal";
@@ -31,12 +31,21 @@ import { formatAmount } from "@/lib/utils";
 export function Users({ users, isSubAdmin, isPayment, isUser, handleSignal }: UsersProps) {
 
   const dispatch = useDispatch<AppDispatch>();
+  const status = useSelector((state: RootState) => state.payment.status);
   const handleWithdraw = async (idOrAmount: string | number) => {
-    dispatch(updatePaymentStatus(idOrAmount as string));
-    if (handleSignal) {
-      handleSignal();
-    }
-  };  
+    const checkStatus = async () => {
+      const result = await dispatch(updatePaymentStatus(idOrAmount as string));
+      if (result.meta.requestStatus !== 'fulfilled') {
+        setTimeout(checkStatus, 500);
+      } else {
+        if (handleSignal) {
+          handleSignal();
+        }
+      }
+    };
+
+    checkStatus();
+  };
 
   return (
     <Table className="border-collapse"> 

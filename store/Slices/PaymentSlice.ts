@@ -47,7 +47,7 @@ export const fetchUserData = createAsyncThunk(
     try {
       let userRes;
       if (isSubAdmin) {
-        userRes = await getSubadmin(page, limit, search);
+        userRes = await getSubadmin(page, limit, search, role);
       } else {
         userRes = await getUsers(page, limit, search, role);
       }

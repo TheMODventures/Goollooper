@@ -19,15 +19,15 @@ const SubadminPage = () => {
   const isAuthenticated = useAuth('/');
   const [currentPage, setCurrentPage] = useState(1);
   const [search, setSearch] = useState("");
-  const [roleFilter, setRoleFilter] = useState(4);
+  const [roleFilter, setRoleFilter] = useState(0);
 
   useEffect(() => {
     try {
-      dispatch(fetchUserData({ page: currentPage, limit: pageData.limit, search, isSubAdmin: true }));
+      dispatch(fetchUserData({ page: currentPage, limit: pageData.limit, search, isSubAdmin: true, role: roleFilter }));
     } catch (error) {
       console.error("Error fetching subadmin data:", error);
     }
-  }, [dispatch, currentPage, search, pageData.limit]);
+  }, [dispatch, currentPage, search, pageData.limit, roleFilter]);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);

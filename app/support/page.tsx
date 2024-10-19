@@ -21,7 +21,7 @@ const SupportPage = () => {
   const [chats, setChats] = useState<Chat[]>([]);
   const [messages, setMessages] = useState<any>([]);
   const [chatData, setChatData] = useState<Chat | null | any>(null);
-  const [activeTab, setActiveTab] = useState<number>(0);
+  const [activeTab, setActiveTab] = useState<number>(1);
   const [refresh, setRefresh] = useState(false);
 
   useEffect(() => {
