@@ -2,9 +2,10 @@
 import React, { useEffect, useState } from "react";
 import { UserAvatar } from "./UserAvatar";
 import { MessageScreen } from "./MessageScreen";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setCurrentActiveChat } from "@/store/Slices/PaymentSlice";
 import TaskDetails from "./TaskDetails";
+import { RootState } from "@/store/store";
 
 export const ChatDetails = ({
   chatData,
@@ -24,7 +25,7 @@ export const ChatDetails = ({
   handleMarkAsComplete?: (userId: string, chatId: string) => void;
 }) => {
   const dispatch = useDispatch();
-
+  const activeTaskId = useSelector((state: RootState) => state.tasks.activeTaskId);
   const [isChecked, setIsChecked] = useState<boolean>(chatData?.isTicketClosed);
 
   const onCheckboxChange = (
@@ -71,7 +72,7 @@ export const ChatDetails = ({
           />
         </div>
       )}
-      {isTask && activeTab === 2 && <TaskDetails />}
+      {isTask && activeTab === 2 && activeTaskId !== "" && <TaskDetails />}
     </>
   );
 };

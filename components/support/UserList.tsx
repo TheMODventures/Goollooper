@@ -32,10 +32,10 @@ export const UserList = ({
       {tasks &&
         tasks.map((task: any) => (
           <UserAvatar
-            key={task._id}
-            text={task.title}
+            key={task?._id}
+            text={task?.title}
             chatData={task}
-            chatId={task._id}
+            chatId={task?._id}
             isTask={true}
             onUserClick={onClick}
           />

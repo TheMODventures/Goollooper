@@ -48,7 +48,11 @@ export const ChatList = ({
   };
 
   const fetchTasks = useCallback(async () => {
-    dispatch(getAllTasks());
+    try {
+      await dispatch(getAllTasks());
+    } catch (error) {
+      console.error("Error fetching tasks:", error);
+    }
   }, [dispatch]);
 
   useEffect(() => {
@@ -90,7 +94,10 @@ export const ChatList = ({
             <SearchBar onSearch={handleSearch}/>
           </div>
           <ScrollArea className="h-calc-chatlist-screen">
-            <UserList tasks={tasks} onClick={handleCurrentSelectTask}  isTask={true} />
+          {tasks ? (
+            <UserList tasks={tasks} onClick={handleCurrentSelectTask} isTask={true} />
+          )
+          : null}
           </ScrollArea>
         </TabsContent>
       </Tabs>

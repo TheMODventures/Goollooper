@@ -45,72 +45,72 @@ const TaskDetails = () => {
         <div>
           <h1>Task</h1>
           <div className="text-4xl font-bold mb-2 text-PrimaryColor">
-            {task.title}
+            {task?.title}
           </div>
-          <Badge variant={task.status === "pending" ? "secondary" : "default"}>
-            {task.status}
+          <Badge variant={task?.status === "pending" ? "secondary" : "default"}>
+            {task?.status}
           </Badge>
         </div>
         <div className="space-y-4 mt-5">
           <h3 className="font-semibold">Description</h3>
           <p className="text-gray-700 p-4 bg-slate-100 rounded-md">
-            {task.description}
+            {task?.description}
           </p>
 
           <div className="grid grid-cols-2 gap-4 border-y-2 border-backGroundSecondaryColor py-2">
             <InfoItem
               icon={<MapPin className="w-4 h-4" />}
               label="Location"
-              value={task.location.readableLocation}
+              value={task?.location?.readableLocation}
               className="col-span-2"
             />
             <InfoItem
               icon={<CalendarIcon className="w-4 h-4" />}
               label="Date"
-              value={formatDate(task.date)}
+              value={formatDate(task?.date)}
             />
             <InfoItem
               icon={<Clock className="w-4 h-4" />}
               label="Time"
-              value={`${task.slot.startTime} - ${task.slot.endTime}`}
+              value={`${task?.slot?.startTime} - ${task?.slot?.endTime}`}
             />
             <InfoItem
               icon={<User className="w-4 h-4" />}
               label="Posted By"
-              value={`${task.postedBy.firstName} ${task.postedBy.lastName}`}
+              value={`${task?.postedBy?.firstName} ${task?.postedBy?.lastName}`}
             />
             <InfoItem
               icon={<Flag className="w-4 h-4" />}
               label="Type"
-              value={task.type}
+              value={task?.type}
             />
             <InfoItem
               icon={<DollarSign className="w-4 h-4" />}
               label="Commercial"
-              value={task.commercial ? "Yes" : "No"}
+              value={task?.commercial ? "Yes" : "No"}
             />
             <InfoItem
               icon={<Users className="w-4 h-4" />}
               label="Service Providers Needed"
-              value={task.noOfServiceProvider}
+              value={task?.noOfServiceProvider}
             />
           </div>
 
-          {task.requirement && (
+          {task?.requirement && (
             <div>
               <h3 className="font-semibold mb-2">Requirements</h3>
               <p className="p-4 bg-slate-100 rounded-md">{task.requirement}</p>
             </div>
           )}
 
-          {(task.gender || task.ageFrom || task.ageTo) && (
+          {(task?.gender || task?.ageFrom || task?.ageTo) && (
             <div>
               <h3 className="font-semibold mb-2">Preferences</h3>
               <ul className="list-disc list-inside">
-                {task.gender && <li>Gender: {task.gender}</li>}
-                {(task.ageFrom || task.ageTo) && (
+                {task?.gender && <li>Gender: {task.gender}</li>}
+                {(task?.ageFrom || task?.ageTo) && (
                   <li>
-                    Age: {task.ageFrom || "Any"} - {task.ageTo || "Any"}
+                    Age: {task?.ageFrom || "Any"} - {task?.ageTo || "Any"}
                   </li>
                 )}
               </ul>
@@ -120,7 +120,7 @@ const TaskDetails = () => {
       </ScrollArea>
       <div className="grid grid-cols-2 gap-3">
         {/* <Button className="col-start-2 bg bg-PrimaryColor rounded-full">
-          Ban {`${task.postedBy.firstName} ${task.postedBy.lastName}`}
+          Ban {`${task?.postedBy?.firstName} ${task?.postedBy?.lastName}`}
         </Button> */}
         <div className="col-start-2">
           <ConfirmationModal

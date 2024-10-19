@@ -92,7 +92,6 @@ function Signin() {
     router.push("/dashboard");
   };
 
-  console.log("Form State:", { isValid, isDirty, emailValue, passwordValue, errors });
   const isFormValid = isValid && emailValue && passwordValue;
 
   return (
