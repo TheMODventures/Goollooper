@@ -24,8 +24,8 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
+    - run: echo "${{secrets.ENV}}" > .env
     - run: npm i
     - run: npm run build 
-    - run: echo "${{secrets.ENV}}" > .env
     - run: /home/mod/.nvm/versions/node/v22.9.0/bin/pm2 restart nextjs-app 
     
