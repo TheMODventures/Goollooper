@@ -16,7 +16,7 @@ const groupMessagesByTime = (messages: Message[]): [string, Message[]][] => {
       const date = new Date(message.createdAt);
       const roundedMinutes = Math.floor(date.getMinutes() / 10) * 10;
       date.setMinutes(roundedMinutes, 0, 0);
-      const key = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const key = date.toISOString();
       
       if (!groups[key]) {
         groups[key] = [];
@@ -25,7 +25,13 @@ const groupMessagesByTime = (messages: Message[]): [string, Message[]][] => {
     }
   });
 
-  return Object.entries(groups);
+  return Object.entries(groups)
+    .sort(([a], [b]) => new Date(a).getTime() - new Date(b).getTime())
+    .map(([key, value]) => {
+      const date = new Date(key);
+      const formattedTime = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      return [formattedTime, value];
+    });
 }
 
 export const MessageScreen = ({
