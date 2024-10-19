@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Chat, User } from '@/types/type';
@@ -47,13 +47,13 @@ export const ChatList = ({
     setSearchQuery(query);
   };
 
-  const fetchTasks = async () => {
-    dispatch(getAllTasks()).unwrap();
-  }
+  const fetchTasks = useCallback(async () => {
+    dispatch(getAllTasks());
+  }, [dispatch]);
 
   useEffect(() => {
     fetchTasks();
-  }, [])
+  }, [fetchTasks]);
 
   const handleCurrentSelectTask = (data: string | Chat | null) => {
     if (typeof data === 'string') {

@@ -72,15 +72,6 @@ export const ChatDetails = ({
         </div>
       )}
       {isTask && activeTab === 2 && <TaskDetails />}
-
-      {activeTab === 0 && (
-        <div className="w-1/2 m-auto flex items-center text-center">
-          <h1>
-            Please select Support or Task to send and receive messages or manage
-            tasks like viewing, deleting, and banning users.
-          </h1>
-        </div>
-      )}
     </>
   );
 };

@@ -33,15 +33,6 @@ import {
   setSubCategoryLevel2Index,
   setSubCategoryLevel3Index,
   setSubCategoryLevel4Index,
-  selectSubCategoryLevel1Index,
-  selectSubCategoryLevel2Index,
-  selectSubCategoryLevel3Index,
-  selectSubCategoryLevel4Index,
-
-  selectLevel1SubCategoryList,
-  selectLevel2SubCategoryList,
-  selectLevel3SubCategoryList,
-  selectLevel4SubCategoryList,
   saveService,
   handleSetType,
   SubService,
@@ -67,10 +58,6 @@ export default function InterestSubpage() {
   const serviceTitle = searchParams.get("title");
   const dispatch = useDispatch<AppDispatch>();
   const service = useSelector(selectService);
-  const level1SubCategoryList = useSelector(selectLevel1SubCategoryList);
-  const level2SubCategoryList = useSelector(selectLevel2SubCategoryList);
-  const level3SubCategoryList = useSelector(selectLevel3SubCategoryList);
-  const level4SubCategoryList = useSelector(selectLevel4SubCategoryList);
 
   const loading = useSelector(selectLoading);
   const singleSubCategory = useSelector(selectSingleSubCategory);
@@ -142,12 +129,12 @@ export default function InterestSubpage() {
       dispatch(handleAddSubCategory({name: singleSubCategory}));
 
     } else if (singleSubCategory) {
-      const industryId = service.subCategories[subCategoryIndex].industry;
+      const industryId = searchParams.get("id");
       const response = await dispatch(
-        addSubService({ serviceId: serviceId, title: singleSubCategory, type: "interest", industry: industryId })
+        addSubService({ serviceId: serviceId, title: singleSubCategory, type: "interest", industry: industryId || undefined })
       ).unwrap();
       const id = response?.data?._id
-      dispatch(handleAddSubCategory({name: singleSubCategory, id: id, industry: industryId}));
+      dispatch(handleAddSubCategory({name: singleSubCategory, id: id, industry: industryId || undefined}));
       dispatch(handleSingleSubCategory(""));
     } else {
       toast.warning("Please input a value for sub category");

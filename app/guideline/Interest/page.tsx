@@ -49,15 +49,6 @@ export default function InterestPage() {
     dispatch(handleRemoveInterestServices({index: idOrAmount as number, id: id as string}));
   };
 
-  const fetchIndustryId = async (id: string) => {
-    try {
-      const industry = await dispatch(fetchService(id)).unwrap();
-      console.log(industry[0].industry);
-    } catch (error) {
-      console.error("Failed to fetch industry:", error);
-    }
-  }
-
   // console.log(services);
 
   return (
@@ -79,7 +70,6 @@ export default function InterestPage() {
             {services?.length
               ? services?.map((service: any, index: number) =>
                   service?.categories?.map((category: any) => {
-                    // fetchIndustryId(category._id);
                     
                     return (<Task
                       key={category._id}
@@ -89,7 +79,7 @@ export default function InterestPage() {
                       isCategory={true}
                       parentIndex={index}
                       onDelete={handleDeleteCategory}
-                      industryId={service.industry}
+                      industryId={service.industryId}
                     />
                     )
                   })

@@ -24,7 +24,7 @@ const Task: React.FC<ServiceProps> = ({ title, id, link, industryId, isIndustry,
       <div className="flex gap-[0.3em]">
         {!isIndustry &&
           <Button className="bg-backGroundColor px-[0.85rem] py-[1.5rem] rounded-sm">
-            <Link href={`${link}/${id}?${industryId ? `${industryId}&` : ""}title=${title}`}>
+            <Link href={`${link}/${id}?${industryId ? `id=${industryId}&` : ""}title=${title}`}>
               <Image
                 src={"/assets/Image/Pancel.svg"}
                 alt=""
